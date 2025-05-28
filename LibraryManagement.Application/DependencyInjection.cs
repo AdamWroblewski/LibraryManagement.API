@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using LibraryManagement.Application.Commands.Auth;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LibraryManagement.Application

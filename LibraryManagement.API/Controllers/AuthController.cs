@@ -1,6 +1,5 @@
-﻿using LibraryManagement.Application.DTOs;
-using LibraryManagement.Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
+﻿using LibraryManagement.Application.Commands.Auth;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagement.API.Controllers
@@ -9,34 +8,22 @@ namespace LibraryManagement.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMediator _mediator;
 
-        public AuthController(UserManager<ApplicationUser> userManager)
+        public AuthController(IMediator mediator)
         {
-            _userManager = userManager;
+            _mediator = mediator;
         }
 
-        // todo: przerobić na CQRS
-        [HttpPost]
-        public async Task<IActionResult> RegisterNewUser([FromBody] RegisterDto model)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
         {
-            var user = new ApplicationUser
+            var result = await _mediator.Send(command);
+            if (result.IsSuccess)
             {
-                UserName = model.Email,
-                Email = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                DateOfBirth = model.DateOfBirth
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            if (!result.Succeeded)
-            {
-                return BadRequest(result.Errors);
+                return Ok(new { UserId = result.Value });
             }
-
-            return Ok(new { user.Id });
+            return BadRequest(result.Errors);
         }
     }
 }

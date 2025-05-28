@@ -1,8 +1,11 @@
 ﻿using System.Reflection;
+using LibraryManagement.Application.Commands.Auth;
+using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Domain.Interfaces;
 using LibraryManagement.Infrastructure.Data;
 using LibraryManagement.Infrastructure.Identity;
 using LibraryManagement.Infrastructure.Repositories;
+using LibraryManagement.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,16 +23,11 @@ namespace LibraryManagement.Infrastructure
             services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IBookRepository, BookRepository>();
             services.AddScoped<ILoanRepository, LoanRepository>();
+            services.AddScoped<IIdentityService, IdentityService>();
 
-            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.Password.RequireDigit = true;
-                options.Password.RequireNonAlphanumeric = true;
-                options.Password.RequiredLength = 8;
-                options.User.RequireUniqueEmail = true;
-            })
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
+            services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             return services;
         }

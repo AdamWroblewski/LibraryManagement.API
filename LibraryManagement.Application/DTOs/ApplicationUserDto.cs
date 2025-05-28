@@ -1,13 +1,16 @@
 ﻿using LibraryManagement.Domain.Entities;
-using Microsoft.AspNetCore.Identity;
 
-namespace LibraryManagement.Infrastructure.Identity
+namespace LibraryManagement.Application.DTOs
 {
-    public class  ApplicationUser : IdentityUser<Guid>
+    public class ApplicationUserDto
     {
+        public Guid Id { get; set; }
+        public string Email { get; set; }
+        public string UserName { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime DateOfBirth { get; set; }
+        public string PasswordHash { get; private set; }
 
         public ICollection<Loan> Loans { get; set; } = new List<Loan>();
     }
