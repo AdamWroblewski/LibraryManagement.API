@@ -4,6 +4,7 @@ using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Domain.Interfaces;
 using LibraryManagement.Infrastructure.Data;
 using LibraryManagement.Infrastructure.Identity;
+using LibraryManagement.Infrastructure.Interfaces;
 using LibraryManagement.Infrastructure.Repositories;
 using LibraryManagement.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
@@ -27,7 +28,9 @@ namespace LibraryManagement.Infrastructure
 
             services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders(); 
+            
+            services.AddScoped<ITokenService, TokenService>();
 
             return services;
         }

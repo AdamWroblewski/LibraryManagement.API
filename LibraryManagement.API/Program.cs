@@ -21,12 +21,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 
-// Add FluentValidation
-
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserCommandValidator>();
-
-
 var app = builder.Build();
 
 app.UseExceptionHandler(errorApp =>

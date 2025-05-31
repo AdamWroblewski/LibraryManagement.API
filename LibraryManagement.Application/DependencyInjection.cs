@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using FluentValidation;
 using LibraryManagement.Application.Behaviors;
 using LibraryManagement.Application.Commands.Auth;
 using MediatR;
@@ -12,6 +13,10 @@ namespace LibraryManagement.Application
         {
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+            services.AddValidatorsFromAssemblyContaining<RegisterUserCommandValidator>();
+            services.AddValidatorsFromAssemblyContaining<LoginUserCommandValidator>();
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             return services;
         }

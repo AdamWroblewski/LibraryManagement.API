@@ -26,5 +26,16 @@ namespace LibraryManagement.API.Controllers
 
             return BadRequest(result.Errors);
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginUserCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            if (result.IsSuccess)
+                return Ok(new { token = result.Value });
+
+            return BadRequest(new { errors = result.Errors });
+        }
     }
 }
