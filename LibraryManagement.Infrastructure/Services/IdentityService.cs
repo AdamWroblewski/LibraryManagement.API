@@ -1,4 +1,5 @@
-﻿using LibraryManagement.Application.Interfaces;
+﻿using FluentResults;
+using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 
@@ -19,7 +20,8 @@ namespace LibraryManagement.Infrastructure.Services
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
             {
-                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                throw new InvalidOperationException($"User creation failed: {errors}");
             }
             return user.Id;
         }

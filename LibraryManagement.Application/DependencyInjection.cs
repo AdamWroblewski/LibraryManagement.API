@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
+using LibraryManagement.Application.Behaviors;
 using LibraryManagement.Application.Commands.Auth;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LibraryManagement.Application

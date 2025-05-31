@@ -15,7 +15,20 @@ namespace LibraryManagement.Application.Commands.Auth
 
         public async Task<Result<Guid>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            var userId = await _identityService.RegisterUserAsync(request.Email, request.Password, request.FirstName, request.LastName);
+            Guid userId;
+            try
+            {
+                userId = await _identityService.RegisterUserAsync(
+                        request.Email,
+                        request.Password,
+                        request.FirstName,
+                        request.LastName);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Result.Fail<Guid>(ex.Message);
+            }
+
             return Result.Ok(userId);
         }
     }

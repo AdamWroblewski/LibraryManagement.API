@@ -23,6 +23,7 @@ namespace LibraryManagement.API.Controllers
             {
                 return Ok(new { UserId = result.Value });
             }
+
             return BadRequest(result.Errors);
         }
     }
