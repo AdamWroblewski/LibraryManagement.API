@@ -2,6 +2,7 @@ using LibraryManagement.Application.Commands.Books;
 using LibraryManagement.Application.DTOs;
 using LibraryManagement.Application.Queries.Books;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagement.API.Controllers
@@ -25,6 +26,7 @@ namespace LibraryManagement.API.Controllers
             return Ok(books);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<BookDto>> Create([FromBody] CreateBookCommand command)
         {

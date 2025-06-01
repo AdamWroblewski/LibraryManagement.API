@@ -23,12 +23,12 @@ namespace LibraryManagement.Infrastructure.Services
         public async Task<string> GenerateTokenAsync(ApplicationUser user)
         {
             var claims = new List<Claim>
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim("firstName", user.FirstName),
-            new Claim("lastName", user.LastName)
-        };
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("firstName", user.FirstName),
+                new Claim("lastName", user.LastName)
+            };
 
             var roles = await _userManager.GetRolesAsync(user);
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
