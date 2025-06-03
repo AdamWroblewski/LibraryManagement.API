@@ -1,6 +1,8 @@
-﻿namespace LibraryManagement.Application.DTOs
+﻿using MediatR;
+
+namespace LibraryManagement.Application.Commands.Books
 {
-    public class BookDto
+    public class UpdateBookCommand : IRequest<Unit>
     {
         public int Id { get; set; }
         public string Title { get; set; }

@@ -1,5 +1,4 @@
-﻿using FluentResults;
-using LibraryManagement.Application.Interfaces;
+﻿using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Infrastructure.Identity;
 using LibraryManagement.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +11,7 @@ namespace LibraryManagement.Infrastructure.Services
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ITokenService _tokenService;
 
-        public IdentityService(UserManager<ApplicationUser> userManager, 
+        public IdentityService(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ITokenService tokenService)
         {

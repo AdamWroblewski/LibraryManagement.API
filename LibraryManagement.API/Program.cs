@@ -1,8 +1,8 @@
 using System.Text;
-using FluentValidation;
 using LibraryManagement.API.DataSeed;
 using LibraryManagement.API.Middleware;
 using LibraryManagement.Application;
+using LibraryManagement.Application.CustomExceptions;
 using LibraryManagement.Infrastructure;
 using LibraryManagement.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -93,35 +93,21 @@ app.UseExceptionHandler(errorApp =>
 
         var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
 
-        if (exception is ValidationException validationException)
+        switch (exception)
         {
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            case EntityNotFoundException notFound:
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                await context.Response.WriteAsJsonAsync(new { error = notFound.Message });
+                break;
 
-            var errors = validationException.Errors
-                .GroupBy(e => e.PropertyName)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Select(e => e.ErrorMessage).ToArray()
-                );
-
-            await context.Response.WriteAsJsonAsync(new { errors });
-        }
-        else
-        {
-            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-
-            var response = new
-            {
-                error = "An unexpected error occurred.",
-                details = exception?.Message
-            };
-
-            await context.Response.WriteAsJsonAsync(response);
+            default:
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                await context.Response.WriteAsJsonAsync(new { error = "An unexpected error occurred." });
+                break;
         }
     });
 });
 
-// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

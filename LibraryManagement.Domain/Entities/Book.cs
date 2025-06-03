@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibraryManagement.Domain.Entities
+﻿namespace LibraryManagement.Domain.Entities
 {
     public class Book
     {
@@ -14,8 +8,15 @@ namespace LibraryManagement.Domain.Entities
         public string ISBN { get; set; }
         public int PublicationYear { get; set; }
         public string Publisher { get; set; }
-        public int AvailableCopies { get; set; }
-
         public ICollection<Loan> Loans { get; set; } = new List<Loan>();
+
+        public void UpdateDetails(string title, string author, string isbn, int publicationYear, string publisher)
+        {
+            Title = title;
+            Author = author;
+            ISBN = isbn;
+            PublicationYear = publicationYear;
+            Publisher = publisher;
+        }
     }
 }

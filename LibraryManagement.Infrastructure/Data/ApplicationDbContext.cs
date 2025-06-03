@@ -26,7 +26,6 @@ namespace LibraryManagement.Infrastructure.Data
                 entity.Property(b => b.Author).IsRequired().HasMaxLength(100);
                 entity.Property(b => b.ISBN).IsRequired().HasMaxLength(20);
                 entity.Property(b => b.Publisher).HasMaxLength(100);
-                entity.Property(b => b.AvailableCopies).IsRequired();
             });
 
             modelBuilder.Entity<Loan>(entity =>
