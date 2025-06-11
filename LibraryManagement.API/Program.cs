@@ -1,4 +1,5 @@
 using System.Text;
+using FluentValidation;
 using LibraryManagement.API.DataSeed;
 using LibraryManagement.API.Middleware;
 using LibraryManagement.Application;
@@ -106,12 +107,17 @@ app.UseExceptionHandler(errorApp =>
         {
             case EntityNotFoundException notFound:
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
-                await context.Response.WriteAsJsonAsync(new { error = notFound.Message });
+                await context.Response.WriteAsJsonAsync(new { errors = notFound.Message });
+                break;
+
+            case ValidationException invalidData:
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsJsonAsync(new { errors = invalidData.Errors });
                 break;
 
             default:
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                await context.Response.WriteAsJsonAsync(new { error = "An unexpected error occurred." });
+                await context.Response.WriteAsJsonAsync(new { errors = "An unexpected error occurred." });
                 break;
         }
     });

@@ -24,6 +24,9 @@ namespace LibraryManagement.Infrastructure.Services
         {
             var user = new ApplicationUser { UserName = email, Email = email, FirstName = firstName, LastName = lastName };
             var result = await _userManager.CreateAsync(user, password);
+
+            await _userManager.AddToRoleAsync(user, "User");
+
             if (!result.Succeeded)
             {
                 var errors = string.Join("; ", result.Errors.Select(e => e.Description));

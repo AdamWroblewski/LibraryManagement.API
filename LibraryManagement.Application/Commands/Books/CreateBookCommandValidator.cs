@@ -2,11 +2,10 @@
 
 namespace LibraryManagement.Application.Commands.Books
 {
-    public class UpdateBookCommandValidator : AbstractValidator<UpdateBookCommand>
+    public class CreateBookCommandValidator : AbstractValidator<CreateBookCommand>
     {
-        public UpdateBookCommandValidator()
+        public CreateBookCommandValidator()
         {
-            RuleFor(x => x.Id).NotEmpty().WithMessage("Email is required.");
             RuleFor(x => x.Title).NotEmpty().WithMessage("Title is required.");
             RuleFor(x => x.Author).NotEmpty().WithMessage("Author is required.");
             RuleFor(x => x.ISBN).NotEmpty().WithMessage("ISBN is required.");
