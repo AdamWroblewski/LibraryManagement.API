@@ -85,7 +85,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped(typeof(RoleManager<IdentityRole<Guid>>));
+builder.Services.AddScoped(typeof(RoleManager<IdentityRole<int>>));
 
 // Add services
 builder.Logging.ClearProviders();
@@ -144,8 +144,9 @@ using (var scope = app.Services.CreateScope())
     context.Database.Migrate();
 
     // Seed roles
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-    await SeedRoles.Seed(roleManager);
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
+    await SeedData.SeedRoles(roleManager);
+    SeedData.SeedBooks(context);
 }
 
 app.Run();

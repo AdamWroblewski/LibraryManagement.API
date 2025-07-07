@@ -20,7 +20,7 @@ namespace LibraryManagement.Infrastructure.Services
             _tokenService = tokenService;
         }
 
-        public async Task<Guid> RegisterUserAsync(string email, string password, string firstName, string lastName)
+        public async Task<int> RegisterUserAsync(string email, string password, string firstName, string lastName)
         {
             var user = new ApplicationUser { UserName = email, Email = email, FirstName = firstName, LastName = lastName };
             var result = await _userManager.CreateAsync(user, password);

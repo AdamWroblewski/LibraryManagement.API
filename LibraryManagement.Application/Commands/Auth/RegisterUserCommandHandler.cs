@@ -4,7 +4,7 @@ using MediatR;
 
 namespace LibraryManagement.Application.Commands.Auth
 {
-    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Result<Guid>>
+    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Result<int>>
     {
         private readonly IIdentityService _identityService;
 
@@ -13,9 +13,9 @@ namespace LibraryManagement.Application.Commands.Auth
             _identityService = identityService;
         }
 
-        public async Task<Result<Guid>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+        public async Task<Result<int>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            Guid userId;
+            int userId;
             try
             {
                 userId = await _identityService.RegisterUserAsync(
@@ -26,7 +26,7 @@ namespace LibraryManagement.Application.Commands.Auth
             }
             catch (InvalidOperationException ex)
             {
-                return Result.Fail<Guid>(ex.Message);
+                return Result.Fail<int>(ex.Message);
             }
 
             return Result.Ok(userId);

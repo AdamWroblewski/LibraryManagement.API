@@ -4,7 +4,7 @@ using MediatR;
 
 namespace LibraryManagement.Application.Commands.Auth
 {
-    public class RegisterUserCommand : IRequest<Result<Guid>>
+    public class RegisterUserCommand : IRequest<Result<int>>
     {
         public string Email { get; set; }
 

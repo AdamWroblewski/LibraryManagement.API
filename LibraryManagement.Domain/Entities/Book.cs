@@ -8,7 +8,7 @@
         public string ISBN { get; set; }
         public int PublicationYear { get; set; }
         public string Publisher { get; set; }
-        public ICollection<Loan> Loans { get; set; } = new List<Loan>();
+        public ICollection<BookLoan> Loans { get; set; } = new List<BookLoan>();
 
         public void UpdateDetails(string title, string author, string isbn, int publicationYear, string publisher)
         {

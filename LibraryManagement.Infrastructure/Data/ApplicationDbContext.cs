@@ -6,14 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.Infrastructure.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
-
         public DbSet<Book> Books { get; set; }
-        public DbSet<Loan> Loans { get; set; }
+        public DbSet<BookLoan> BookLoans { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,14 +27,21 @@ namespace LibraryManagement.Infrastructure.Data
                 entity.Property(b => b.Publisher).HasMaxLength(100);
             });
 
-            modelBuilder.Entity<Loan>(entity =>
+            modelBuilder.Entity<BookLoan>(entity =>
             {
                 entity.HasKey(l => l.Id);
-                entity.Property(l => l.LoanDate).IsRequired();
-
+                
+                // Foreign key to Book
                 entity.HasOne(l => l.Book)
                       .WithMany(b => b.Loans)
-                      .HasForeignKey(l => l.BookId);
+                      .HasForeignKey(l => l.BookId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                // Foreign key to ApplicationUser
+                entity.HasOne<ApplicationUser>()
+                      .WithMany()
+                      .HasForeignKey(br => br.ApplicationUserId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }

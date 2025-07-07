@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using LibraryManagement.Application.Commands.Auth;
-using LibraryManagement.Application.Interfaces;
+﻿using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Domain.Interfaces;
 using LibraryManagement.Infrastructure.Data;
 using LibraryManagement.Infrastructure.Identity;
@@ -23,13 +21,13 @@ namespace LibraryManagement.Infrastructure
 
             services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IBookRepository, BookRepository>();
-            services.AddScoped<ILoanRepository, LoanRepository>();
+            services.AddScoped<IBookLoanRepository, BookLoanRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
 
-            services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+            services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders(); 
-            
+                .AddDefaultTokenProviders();
+
             services.AddScoped<ITokenService, TokenService>();
 
             return services;
