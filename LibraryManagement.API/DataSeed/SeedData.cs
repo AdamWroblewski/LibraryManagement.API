@@ -1,5 +1,6 @@
 ﻿using LibraryManagement.Domain.Entities;
 using LibraryManagement.Infrastructure.Data;
+using LibraryManagement.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace LibraryManagement.API.DataSeed
@@ -16,6 +17,23 @@ namespace LibraryManagement.API.DataSeed
                 {
                     await roleManager.CreateAsync(new IdentityRole<int>(role));
                 }
+            }
+        }
+
+        public static async Task SeedAdmin(UserManager<ApplicationUser> userManager)
+        {
+            var email = "admin@admin";
+            if (await userManager.FindByEmailAsync(email) is null)
+            {
+                ApplicationUser user = new ApplicationUser
+                { 
+                    UserName = "admin",
+                    Email = email,
+                    FirstName = "admin",
+                    LastName = "admin" 
+                };
+
+                await userManager.CreateAsync(user, "Password1!");
             }
         }
 

@@ -6,6 +6,7 @@ using LibraryManagement.Application;
 using LibraryManagement.Application.CustomExceptions;
 using LibraryManagement.Infrastructure;
 using LibraryManagement.Infrastructure.Data;
+using LibraryManagement.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
@@ -145,7 +146,10 @@ using (var scope = app.Services.CreateScope())
 
     // Seed roles
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
     await SeedData.SeedRoles(roleManager);
+    await SeedData.SeedAdmin(userManager);
     SeedData.SeedBooks(context);
 }
 
