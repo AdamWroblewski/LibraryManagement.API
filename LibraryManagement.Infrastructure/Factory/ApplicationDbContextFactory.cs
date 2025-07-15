@@ -13,7 +13,7 @@ namespace LibraryManagement.Infrastructure
             // Adjust the path as needed for your solution structure
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.json", optional: true) 
                 .AddEnvironmentVariables()
                 .Build();
 
