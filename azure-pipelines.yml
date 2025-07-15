@@ -30,5 +30,5 @@
        azureSubscription: 'LibraryManagementConnection'
        appType: 'webApp'
        appName: 'LibraryManagementApi'
-       package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+       package: '$(Build.ArtifactStagingDirectory)/LibraryManagementApi.zip'
    
