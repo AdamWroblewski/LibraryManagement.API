@@ -39,4 +39,11 @@
        appType: 'webApp'
        appName: 'LibraryManagementApi'
        package: '$(Build.ArtifactStagingDirectory)/LibraryManagementApi.zip'
+
+          
+   # Run EF Core migrations after deployment
+   - script: dotnet ef database update --project LibraryManagement.Infrastructure/LibraryManagement.Infrastructure.csproj --configuration $(buildConfiguration)
+     displayName: 'Apply EF Core Migrations'
+     env:
+       ASPNETCORE_ENVIRONMENT: 'Production'
    
