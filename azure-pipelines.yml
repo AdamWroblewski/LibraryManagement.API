@@ -50,4 +50,5 @@
      displayName: 'Apply EF Core Migrations'
      env:
        ASPNETCORE_ENVIRONMENT: 'Production'
+       ConnectionStrings__DefaultConnection: 'LibraryManagementConnectionString'
    
