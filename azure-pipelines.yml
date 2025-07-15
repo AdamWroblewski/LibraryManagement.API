@@ -29,6 +29,6 @@
      inputs:
        azureSubscription: 'LibraryManagementConnection'
        appType: 'webApp'
-       appName: 'LibraryManagement'
+       appName: 'LibraryManagementApi'
        package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
    
