@@ -27,10 +27,11 @@
        archiveType: 'zip'
        archiveFile: '$(Build.ArtifactStagingDirectory)/LibraryManagementApi.zip'
        replaceExistingArchive: true
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: 'drop'
+       
+   - task: PublishBuildArtifacts@1
+     inputs:
+       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+       ArtifactName: 'drop'
 
    - task: AzureWebApp@1
      inputs:
