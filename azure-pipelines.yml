@@ -1,0 +1,42 @@
+   trigger:
+     - main
+
+   pool:
+     vmImage: 'windows-latest'
+
+   variables:
+     buildConfiguration: 'Release'
+
+   steps:
+   - task: UseDotNet@2
+     inputs:
+       packageType: 'sdk'
+       version: '8.x'
+       installationPath: $(Agent.ToolsDirectory)/dotnet
+
+   - script: dotnet build --configuration $(buildConfiguration)
+     displayName: 'Build project'
+
+   - script: dotnet publish -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)
+     displayName: 'Publish project'
+     
+   - task: ArchiveFiles@2
+     inputs:
+       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+       includeRootFolder: false
+       archiveType: 'zip'
+       archiveFile: '$(Build.ArtifactStagingDirectory)/LibraryManagementApi.zip'
+       replaceExistingArchive: true
+       
+   - task: PublishBuildArtifacts@1
+     inputs:
+       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+       ArtifactName: 'drop'
+
+   - task: AzureWebApp@1
+     inputs:
+       azureSubscription: 'LibraryManagementConnection'
+       appType: 'webApp'
+       appName: 'LibraryManagementApi'
+       package: '$(Build.ArtifactStagingDirectory)/LibraryManagementApi.zip'
+   
