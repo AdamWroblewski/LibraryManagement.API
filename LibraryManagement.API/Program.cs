@@ -137,7 +137,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
+await using (var scope = app.Services.CreateAsyncScope())
 {
     // Initialize database
     var services = scope.ServiceProvider;
@@ -153,4 +153,4 @@ using (var scope = app.Services.CreateScope())
     SeedData.SeedBooks(context);
 }
 
-app.Run();
+await app.RunAsync();
