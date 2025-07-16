@@ -5,8 +5,8 @@
      vmImage: 'windows-latest'
 
    variables:
-     - group: AppServiceSecrets
-     buildConfiguration: 'Release'
+   - group: AppServiceSecrets
+   buildConfiguration: 'Release'
 
    steps:
    - task: UseDotNet@2
