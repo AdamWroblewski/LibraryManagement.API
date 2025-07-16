@@ -1,3 +1,7 @@
+   variables:
+     - group: AppServiceSecrets # Link your variable group here
+     buildConfiguration: 'Release'
+   
    trigger:
      - main
 
@@ -46,7 +50,7 @@
        PATH: $(PATH):$(USERPROFILE)/.dotnet/tools
           
    # Run EF Core migrations after deployment
-   - script: dotnet ef database update --project LibraryManagement.Infrastructure/LibraryManagement.Infrastructure.csproj --configuration $(buildConfiguration)
+   - script: dotnet ef database update --project LibraryManagement.Infrastructure/LibraryManagement.Infrastructure.csproj --configuration $(buildConfiguration) --connection "$(SqlConnectionString)"
      displayName: 'Apply EF Core Migrations'
      env:
        ASPNETCORE_ENVIRONMENT: 'Production'
