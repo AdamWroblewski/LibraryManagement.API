@@ -5,7 +5,8 @@
      vmImage: 'windows-latest'
 
    variables:
-     buildConfiguration: 'Release'
+   - name: buildConfiguration # List item 1: an individual variable defined with 'name' and 'value'
+     value: 'Release'
    - group: AppServiceSecrets
 
    steps:
