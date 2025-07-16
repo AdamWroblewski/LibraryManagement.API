@@ -1,7 +1,3 @@
-   variables:
-     - group: AppServiceSecrets # Link your variable group here
-     buildConfiguration: 'Release'
-   
    trigger:
      - main
 
@@ -9,7 +5,8 @@
      vmImage: 'windows-latest'
 
    variables:
-     buildConfiguration: 'Release'
+     - group: AppServiceSecrets # Link your variable group here
+     buildConfiguration: 'Release'     
 
    steps:
    - task: UseDotNet@2
