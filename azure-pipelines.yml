@@ -5,7 +5,9 @@
      vmImage: 'windows-latest'
 
    variables:
-     buildConfiguration: 'Release'
+   - name: buildConfiguration
+     value: 'Release'
+   - group: AppServiceSecrets
 
    steps:
    - task: UseDotNet@2
@@ -46,9 +48,8 @@
        PATH: $(PATH):$(USERPROFILE)/.dotnet/tools
           
    # Run EF Core migrations after deployment
-   - script: dotnet ef database update --project LibraryManagement.Infrastructure/LibraryManagement.Infrastructure.csproj --configuration $(buildConfiguration)
+   - script: dotnet ef database update --project LibraryManagement.Infrastructure/LibraryManagement.Infrastructure.csproj --configuration $(buildConfiguration) --connection "$(SqlConnectionString)"
      displayName: 'Apply EF Core Migrations'
      env:
        ASPNETCORE_ENVIRONMENT: 'Production'
-       ConnectionStrings__DefaultConnection: 'LibraryManagementConnectionString'
-   
+       
