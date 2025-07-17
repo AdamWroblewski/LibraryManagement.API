@@ -30,6 +30,8 @@ namespace LibraryManagement.Infrastructure
 
             services.AddScoped<ITokenService, TokenService>();
 
+            services.AddScoped(typeof(RoleManager<IdentityRole<int>>));
+
             return services;
         }
     }

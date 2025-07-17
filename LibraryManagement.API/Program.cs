@@ -17,8 +17,6 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true);
-
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("Logs/errors.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
@@ -27,10 +25,13 @@ builder.Host.UseSerilog();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngularDev",
+    options.AddPolicy("AllowSpecificOrigins", // Zmiana nazwy na bardziej ogóln¹
         policy =>
         {
-            policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+            policy.WithOrigins("http://localhost:4200", 
+                               "librarymanagementapi-cqh6g6dhavhzcyg6.polandcentral-01.azurewebsites.net")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
         });
 });
 
@@ -86,8 +87,6 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped(typeof(RoleManager<IdentityRole<int>>));
-
 // Add services
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole(); // Logs to console
@@ -131,26 +130,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("AllowAngularDev");
+app.UseCors("AllowSpecificOrigins");
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
-await using (var scope = app.Services.CreateAsyncScope())
-{
-    // Initialize database
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate();
-
-    // Seed roles
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-    await SeedData.SeedRoles(roleManager);
-    await SeedData.SeedAdmin(userManager);
-    SeedData.SeedBooks(context);
-}
 
 await app.RunAsync();
