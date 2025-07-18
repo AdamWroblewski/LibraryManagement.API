@@ -53,9 +53,9 @@
      env:
        ASPNETCORE_ENVIRONMENT: 'Production'
 
-  # Run data seeding
-  - script: dotnet run --project LibraryManagement.API/LibraryManagement.API.csproj seeddata
-    displayName: 'Seed database data'
-    env:
-      ConnectionStrings__DefaultConnection: "$(SqlConnectionString)"
+    # Run data seeding
+    - script: dotnet run --project LibraryManagement.API/LibraryManagement.API.csproj seeddata
+      displayName: 'Seed database data'
+      env:
+        ConnectionStrings__DefaultConnection: "$(SqlConnectionString)"
        
