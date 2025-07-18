@@ -96,6 +96,14 @@ builder.Logging.AddDebug();   // Logs to debug window
 
 var app = builder.Build();
 
+if (args.Length == 1 && args[0].ToLower() == "seeddata")
+{
+    Console.WriteLine("Seeding data...");
+    await SeedDataAsync(app);
+    Console.WriteLine("Seeding complete. Exiting.");
+    return;
+}
+
 app.UseMiddleware<ErrorLoggingMiddleware>();
 app.UseExceptionHandler(errorApp =>
 {
@@ -139,3 +147,26 @@ app.UseAuthorization();
 app.MapControllers();
 
 await app.RunAsync();
+
+async Task SeedDataAsync(IHost app)
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        try
+        {
+            var context = services.GetRequiredService<ApplicationDbContext>();
+            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
+
+            await SeedData.SeedRoles(roleManager);
+            await SeedData.SeedAdmin(userManager);
+            SeedData.SeedBooks(context);
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred during data seeding.");
+        }
+    }
+}
