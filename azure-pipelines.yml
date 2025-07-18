@@ -47,9 +47,15 @@
      env:
        PATH: $(PATH):$(USERPROFILE)/.dotnet/tools
           
-   # Run EF Core migrations after deployment
+   # Run EF Core migrations
    - script: dotnet ef database update --project LibraryManagement.Infrastructure/LibraryManagement.Infrastructure.csproj --configuration $(buildConfiguration) --connection "$(SqlConnectionString)"
      displayName: 'Apply EF Core Migrations'
      env:
        ASPNETCORE_ENVIRONMENT: 'Production'
+
+  # Run data seeding
+  - script: dotnet run --project LibraryManagement.API/LibraryManagement.API.csproj seeddata
+    displayName: 'Seed database data'
+    env:
+      ConnectionStrings__DefaultConnection: "$(SqlConnectionString)"
        
