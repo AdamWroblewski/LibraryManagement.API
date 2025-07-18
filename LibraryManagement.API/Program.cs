@@ -25,11 +25,13 @@ builder.Host.UseSerilog();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigins", // Zmiana nazwy na bardziej ogóln¹
+    options.AddPolicy("AllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200", 
-                               "librarymanagementapi-cqh6g6dhavhzcyg6.polandcentral-01.azurewebsites.net")
+            policy.WithOrigins(
+                      "http://localhost:4200", 
+                      "https://thankful-cliff-089e04a03.2.azurestaticapps.net"
+                  )
                   .AllowAnyMethod()
                   .AllowAnyHeader();
         });
