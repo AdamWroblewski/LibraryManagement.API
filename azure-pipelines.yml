@@ -1,61 +1,64 @@
-   trigger:
-     - main
+trigger:
+- main
 
-   pool:
-     vmImage: 'windows-latest'
+pool:
+  vmImage: 'windows-latest'
 
-   variables:
-   - name: buildConfiguration
-     value: 'Release'
-   - group: AppServiceSecrets
+variables:
+- name: buildConfiguration
+  value: 'Release'
+- group: AppServiceSecrets
 
-   steps:
-   - task: UseDotNet@2
-     inputs:
-       packageType: 'sdk'
-       version: '8.x'
-       installationPath: $(Agent.ToolsDirectory)/dotnet
+steps:
+- task: UseDotNet@2
+  displayName: 'Install .NET SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'
+    installationPath: $(Agent.ToolsDirectory)/dotnet
 
-   - script: dotnet build --configuration $(buildConfiguration)
-     displayName: 'Build project'
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'Build project'
 
-   - script: dotnet publish -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)
-     displayName: 'Publish project'
-     
-   - task: ArchiveFiles@2
-     inputs:
-       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
-       includeRootFolder: false
-       archiveType: 'zip'
-       archiveFile: '$(Build.ArtifactStagingDirectory)/LibraryManagementApi.zip'
-       replaceExistingArchive: true
-       
-   - task: PublishBuildArtifacts@1
-     inputs:
-       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-       ArtifactName: 'drop'
+- script: dotnet publish -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)
+  displayName: 'Publish project'
+  
+- task: ArchiveFiles@2
+  displayName: 'Archive published files'
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/LibraryManagementApi.zip'
+    replaceExistingArchive: true
+    
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish build artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
 
-   - task: AzureWebApp@1
-     inputs:
-       azureSubscription: 'LibraryManagementConnection'
-       appType: 'webApp'
-       appName: 'LibraryManagementApi'
-       package: '$(Build.ArtifactStagingDirectory)/LibraryManagementApi.zip'
-       
-   - script: dotnet tool install --global dotnet-ef
-     displayName: 'Install dotnet-ef tool'
-     env:
-       PATH: $(PATH):$(USERPROFILE)/.dotnet/tools
-          
-   # Run EF Core migrations
-   - script: dotnet ef database update --project LibraryManagement.Infrastructure/LibraryManagement.Infrastructure.csproj --configuration $(buildConfiguration) --connection "$(SqlConnectionString)"
-     displayName: 'Apply EF Core Migrations'
-     env:
-       ASPNETCORE_ENVIRONMENT: 'Production'
+- task: AzureWebApp@1
+  displayName: 'Deploy Azure Web App'
+  inputs:
+    azureSubscription: 'LibraryManagementConnection'
+    appType: 'webApp'
+    appName: 'LibraryManagementApi'
+    package: '$(Build.ArtifactStagingDirectory)/LibraryManagementApi.zip'
+    
+- script: dotnet tool install --global dotnet-ef
+  displayName: 'Install dotnet-ef tool'
+  env:
+    PATH: $(PATH):$(USERPROFILE)/.dotnet/tools
+      
+# Run EF Core migrations
+- script: dotnet ef database update --project LibraryManagement.Infrastructure/LibraryManagement.Infrastructure.csproj --configuration $(buildConfiguration) --connection "$(SqlConnectionString)"
+  displayName: 'Apply EF Core Migrations'
+  env:
+    ASPNETCORE_ENVIRONMENT: 'Production'
 
-    # Run data seeding
-    - script: dotnet run --project LibraryManagement.API/LibraryManagement.API.csproj seeddata
-      displayName: 'Seed database data'
-      env:
-        ConnectionStrings__DefaultConnection: "$(SqlConnectionString)"
-       
+# Run data seeding
+- script: dotnet run --project LibraryManagement.API/LibraryManagement.API.csproj seeddata
+  displayName: 'Seed database data'
+  env:
+    ConnectionStrings__DefaultConnection: "$(SqlConnectionString)"
