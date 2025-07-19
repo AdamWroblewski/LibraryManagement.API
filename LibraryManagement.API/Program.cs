@@ -17,11 +17,18 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var logPath = Path.Combine(
+    Environment.GetEnvironmentVariable("HOME") ?? ".",
+    "LogFiles",
+    "Application",
+    "errors-.txt");
+
+
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
     .WriteTo.Console() 
     .WriteTo.Debug()
-    .WriteTo.File("Logs/errors.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.File(logPath, rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
 builder.Host.UseSerilog();
