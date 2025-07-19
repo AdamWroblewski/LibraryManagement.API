@@ -170,7 +170,7 @@ async Task SeedDataAsync(IHost app)
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
 
             await SeedData.SeedRoles(roleManager);
-            await SeedData.SeedAdmin(userManager);
+            await SeedData.SeedAdmin(userManager, roleManager);
             SeedData.SeedBooks(context);
         }
         catch (Exception ex)
