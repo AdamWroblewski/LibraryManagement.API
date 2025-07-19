@@ -1,4 +1,5 @@
-﻿using LibraryManagement.Domain.Entities;
+﻿using FluentResults;
+using LibraryManagement.Domain.Entities;
 using LibraryManagement.Infrastructure.Data;
 using LibraryManagement.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -20,20 +21,26 @@ namespace LibraryManagement.API.DataSeed
             }
         }
 
-        public static async Task SeedAdmin(UserManager<ApplicationUser> userManager)
+        public static async Task SeedAdmin(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<int>> roleManager)
         {
             var email = "admin@admin";
             if (await userManager.FindByEmailAsync(email) is null)
             {
                 ApplicationUser user = new ApplicationUser
-                { 
+                {
                     UserName = "admin",
                     Email = email,
                     FirstName = "admin",
-                    LastName = "admin" 
+                    LastName = "admin"
                 };
 
-                await userManager.CreateAsync(user, "Password1!");
+                var result = await userManager.CreateAsync(user, "Password1!");
+
+                // If the user was created successfully, add them to the desired roles
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRolesAsync(user, new[] { "Admin", "Employee", "User" });
+                }
             }
         }
 
