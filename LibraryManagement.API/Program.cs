@@ -10,6 +10,7 @@ using LibraryManagement.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -17,7 +18,9 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
+    .MinimumLevel.Debug()
+    .WriteTo.Console() 
+    .WriteTo.Debug()
     .WriteTo.File("Logs/errors.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
@@ -29,7 +32,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
-                      "http://localhost:4200",
+                      "http://localhost:4200", 
                       "https://thankful-cliff-089e04a03.2.azurestaticapps.net"
                   )
                   .AllowAnyMethod()
