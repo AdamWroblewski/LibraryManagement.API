@@ -1,6 +1,7 @@
 using System.Text;
 using FluentValidation;
 using LibraryManagement.API.DataSeed;
+using LibraryManagement.API.Extensions;
 using LibraryManagement.API.Middleware;
 using LibraryManagement.Application;
 using LibraryManagement.Application.CustomExceptions;
@@ -106,14 +107,6 @@ builder.Logging.AddDebug();   // Logs to debug window
 
 var app = builder.Build();
 
-if (args.Length == 1 && args[0].ToLower() == "seeddata")
-{
-    Console.WriteLine("Seeding data...");
-    await SeedDataAsync(app);
-    Console.WriteLine("Seeding complete. Exiting.");
-    return;
-}
-
 app.UseMiddleware<ErrorLoggingMiddleware>();
 app.UseExceptionHandler(errorApp =>
 {
@@ -147,6 +140,17 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
+    app.ApplyMigrations<ApplicationDbContext>();
+    await SeedDataAsync(app);
+}
+
+if (args.Length == 1 && args[0].ToLower() == "seeddata")
+{
+    Console.WriteLine("Seeding data...");
+    await SeedDataAsync(app);
+    Console.WriteLine("Seeding complete. Exiting.");
+    return;
 }
 
 app.UseHttpsRedirection();
