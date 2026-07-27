@@ -13,6 +13,7 @@ namespace LibraryManagement.Infrastructure.Data
 
         public DbSet<Book> Books { get; set; }
         public DbSet<BookLoan> BookLoans { get; set; }
+        public DbSet<BookReview> BookReviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,21 +28,21 @@ namespace LibraryManagement.Infrastructure.Data
                 entity.Property(b => b.Publisher).HasMaxLength(100);
             });
 
-            modelBuilder.Entity<BookLoan>(entity =>
+            modelBuilder.Entity<BookLoan>(builder =>
             {
-                entity.HasKey(l => l.Id);
-                
-                // Foreign key to Book
-                entity.HasOne(l => l.Book)
-                      .WithMany(b => b.Loans)
-                      .HasForeignKey(l => l.BookId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                builder.HasOne<ApplicationUser>()
+                       .WithMany(u => u.BookLoans)
+                       .HasForeignKey(bl => bl.ApplicationUserId)
+                       .OnDelete(DeleteBehavior.Restrict);
+            });
 
-                // Foreign key to ApplicationUser
+            // BookReview -> ApplicationUser Configuration (if navigation exists)
+            modelBuilder.Entity<BookReview>(entity =>
+            {
                 entity.HasOne<ApplicationUser>()
-                      .WithMany()
-                      .HasForeignKey(br => br.ApplicationUserId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                       .WithMany()
+                       .HasForeignKey(br => br.ApplicationUserId)
+                       .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }

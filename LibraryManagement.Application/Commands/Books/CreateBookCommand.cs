@@ -1,9 +1,10 @@
-﻿using LibraryManagement.Application.DTOs;
+﻿using FluentResults;
+using LibraryManagement.Application.DTOs;
 using MediatR;
 
 namespace LibraryManagement.Application.Commands.Books
 {
-    public class CreateBookCommand : IRequest<BookDto>
+    public class CreateBookCommand : IRequest<Result<int>>
     {
         public string Title { get; set; }
         public string Author { get; set; }

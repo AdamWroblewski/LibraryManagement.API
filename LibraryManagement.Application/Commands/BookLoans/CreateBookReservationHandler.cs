@@ -27,9 +27,7 @@ namespace LibraryManagement.Application.Commands.BookReservations
                 return Result.Fail("You already have an active reservation for this book.");
             }
 
-            BookLoan bookLoan = _mapper.Map<BookLoan>(request);
-            bookLoan.IsReservation = true;
-            bookLoan.ReservationDate = DateTime.UtcNow;
+            BookLoan bookLoan = new BookLoan(request.bookId, request.applicationUserId, true, DateTime.Now);
 
             await _bookLoanRepository.AddAsync(bookLoan);
 

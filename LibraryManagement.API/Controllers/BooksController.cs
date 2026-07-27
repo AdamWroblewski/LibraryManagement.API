@@ -38,18 +38,15 @@ namespace LibraryManagement.API.Controllers
         [HttpPost]
         public async Task<ActionResult<BookDto>> Create([FromBody] CreateBookCommand command)
         {
-            var book = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetAll), new { id = book.Id }, book);
+            var bookId = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetById), new { id = bookId }, bookId);
         }
 
         [Authorize(Roles = "Employee")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateBookCommand command)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateBookCommand command)
         {
-            if (id != command.Id)
-            {
-                return BadRequest("ID mismatch");
-            }
+            command.Id = id;
 
             await _mediator.Send(command);
             return NoContent();
@@ -66,6 +63,5 @@ namespace LibraryManagement.API.Controllers
 
             return NoContent();
         }
-
     }
 }

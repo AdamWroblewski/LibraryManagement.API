@@ -42,7 +42,7 @@ namespace LibraryManagement.API.Controllers
             if (!result.IsSuccess)
                 return BadRequest(result.Errors);
 
-            return Ok(new { SuccessMessage = $"The book has been reserved correctly, the reservation is valid until { DateTime.UtcNow.AddDays(-4).Date.ToShortDateString() }" });
+            return Ok(new { SuccessMessage = $"The book has been reserved correctly, the reservation is valid until { DateTime.UtcNow.AddDays(1).Date.ToShortDateString() }" });
         }
     }
 }

@@ -9,6 +9,6 @@ namespace LibraryManagement.Infrastructure.Identity
         public string LastName { get; set; }
         public DateTime DateOfBirth { get; set; }
 
-        public ICollection<BookLoan> Loans { get; set; } = new List<BookLoan>();
+        public ICollection<BookLoan> BookLoans { get; set; } = new List<BookLoan>();
     }
 }
