@@ -1,10 +1,9 @@
-using System.Security.Claims;
 using LibraryManagement.Application.Commands.BookReservations;
 using LibraryManagement.Application.Queries.BookLoans;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Security.Claims;
 
 namespace LibraryManagement.API.Controllers
 {
@@ -20,8 +19,8 @@ namespace LibraryManagement.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("activeLoans/{bookId}")]
-        public async Task<ActionResult> GetActiveLoans(int bookId)
+        [HttpGet("book/{bookId:int}")]
+        public async Task<ActionResult> GetActiveLoansByBookId(int bookId)
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var query = new GetActiveLoansQuery(bookId, userId);
@@ -32,17 +31,21 @@ namespace LibraryManagement.API.Controllers
         }
 
         [Authorize]
+        [HttpGet("activeLoans/{id:int}")]
+        public async Task<ActionResult> GetLoanById(int id)
+        {
+            return Ok();
+        }
+
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult> CreateBookReservation([FromBody] CreateBookReservationCommand command)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var commandWithUserId = command with { applicationUserId = userId };
-
-            var result = await _mediator.Send(commandWithUserId);
-            if (!result.IsSuccess)
-                return BadRequest(result.Errors);
-
-            return Ok(new { SuccessMessage = $"The book has been reserved correctly, the reservation is valid until { DateTime.UtcNow.AddDays(1).Date.ToShortDateString() }" });
+            var loanId = await _mediator.Send(command);
+            return CreatedAtAction(
+                nameof(GetLoanById),
+                new { id = loanId },
+                new { id = loanId });
         }
     }
 }

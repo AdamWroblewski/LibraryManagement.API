@@ -1,13 +1,12 @@
-﻿using LibraryManagement.Application.DTOs;
-using MediatR;
+﻿using MediatR;
+using System.Text.Json.Serialization;
 
 namespace LibraryManagement.Application.Commands.BookReviews
 {
-    public class CreateBookReviewCommand : IRequest<int>
-    {
-        public string Comment { get; set; }
-        public int BookId { get; set; }
-        public int ApplicationUserId { get; set; }
-        public int Rate { get; set; }
-    }
+    public record CreateBookReviewCommand(
+        [property: JsonIgnore] int ApplicationUserId,
+        [property: JsonIgnore] int BookId,
+        string Comment,
+        int Rate 
+        ) : IRequest<int>;
 }

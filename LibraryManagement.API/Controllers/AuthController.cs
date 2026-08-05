@@ -19,12 +19,13 @@ namespace LibraryManagement.API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
         {
             var result = await _mediator.Send(command);
-            if (result.IsSuccess)
+            if (!result.IsSuccess)
             {
-                return Ok(new { UserId = result.Value });
+                return BadRequest(result.Errors);
             }
 
-            return BadRequest(result.Errors);
+            //TODO: change to CreatedAtAction
+            return Created($"/api/users/{result.Value}", new { id = result.Value });
         }
 
         [HttpPost("login")]

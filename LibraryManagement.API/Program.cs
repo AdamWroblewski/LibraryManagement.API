@@ -1,8 +1,6 @@
-using System.Text;
 using FluentValidation;
 using LibraryManagement.API.DataSeed;
 using LibraryManagement.API.Extensions;
-using LibraryManagement.API.Middleware;
 using LibraryManagement.Application;
 using LibraryManagement.Application.CustomExceptions;
 using LibraryManagement.Infrastructure;
@@ -11,10 +9,10 @@ using LibraryManagement.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +25,7 @@ var logPath = Path.Combine(
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
-    .WriteTo.Console() 
+    .WriteTo.Console()
     .WriteTo.Debug()
     .WriteTo.File(logPath, rollingInterval: RollingInterval.Day)
     .CreateLogger();
@@ -38,16 +36,15 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
         policy =>
-        {
-            policy.WithOrigins(
-                      "http://localhost:4200", 
-                      "https://thankful-cliff-089e04a03.2.azurestaticapps.net"
-                  )
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
-        });
+    {
+        policy.WithOrigins(
+                  "http://localhost:4200",
+                  "https://thankful-cliff-089e04a03.2.azurestaticapps.net"
+              )
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
 });
-
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -107,30 +104,52 @@ builder.Logging.AddDebug();   // Logs to debug window
 
 var app = builder.Build();
 
-app.UseMiddleware<ErrorLoggingMiddleware>();
+app.UseCors("AllowSpecificOrigins");
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
     {
-        context.Response.ContentType = "application/json";
+        var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
+        if (exceptionHandlerFeature == null) return;
 
-        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+        var exception = exceptionHandlerFeature.Error;
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+
+        context.Response.ContentType = "application/json";
 
         switch (exception)
         {
-            case EntityNotFoundException notFound:
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
-                await context.Response.WriteAsJsonAsync(new { errors = notFound.Message });
+            case ValidationException validationException:
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                logger.LogWarning(exception, "Validation failed for request: {Path}", context.Request.Path);
+
+                var errors = validationException.Errors
+                    .GroupBy(e => e.PropertyName)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Select(e => e.ErrorMessage).ToArray()
+                    );
+
+                await context.Response.WriteAsJsonAsync(new { errors });
                 break;
 
-            case ValidationException invalidData:
+            case EntityNotFoundException:
+            case KeyNotFoundException:
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                logger.LogWarning(exception, "Resource not found at path: {Path}", context.Request.Path);
+                await context.Response.WriteAsJsonAsync(new { errors = exception.Message });
+                break;
+
+            case InvalidOperationException:
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsJsonAsync(new { errors = invalidData.Errors });
+                logger.LogWarning(exception, "Invalid operation attempt: {Path}", context.Request.Path);
+                await context.Response.WriteAsJsonAsync(new { errors = exception.Message });
                 break;
 
             default:
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                await context.Response.WriteAsJsonAsync(new { errors = "An unexpected error occurred." });
+                logger.LogError(exception, "An unhandled exception occurred while processing path: {Path}", context.Request.Path);
+                await context.Response.WriteAsJsonAsync(new { errors = "An unhandled server error occurred." });
                 break;
         }
     });
@@ -140,7 +159,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    
+
     app.ApplyMigrations<ApplicationDbContext>();
     await SeedDataAsync(app);
 }
@@ -154,7 +173,6 @@ if (args.Length == 1 && args[0].ToLower() == "seeddata")
 }
 
 app.UseHttpsRedirection();
-app.UseCors("AllowSpecificOrigins");
 
 app.UseAuthentication();
 app.UseAuthorization();

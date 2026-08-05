@@ -4,6 +4,7 @@ using LibraryManagement.Application.Queries.Books;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LibraryManagement.API.Controllers
 {
@@ -26,7 +27,7 @@ namespace LibraryManagement.API.Controllers
             return Ok(books);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<List<BookDto>>> GetById(int id)
         {
             var query = new GetBookByIdQuery(id);
@@ -36,24 +37,27 @@ namespace LibraryManagement.API.Controllers
 
         [Authorize(Roles = "Employee")]
         [HttpPost]
-        public async Task<ActionResult<BookDto>> Create([FromBody] CreateBookCommand command)
+        public async Task<IActionResult> Create([FromBody] CreateBookCommand command)
         {
             var bookId = await _mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = bookId }, bookId);
         }
 
         [Authorize(Roles = "Employee")]
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateBookCommand command)
         {
-            command.Id = id;
+            var secureCommand = command with
+            {
+                Id = id
+            };
 
-            await _mediator.Send(command);
+            await _mediator.Send(secureCommand);
             return NoContent();
         }
 
         [Authorize(Roles = "Employee")]
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _mediator.Send(new DeleteBookByIdCommand(id));

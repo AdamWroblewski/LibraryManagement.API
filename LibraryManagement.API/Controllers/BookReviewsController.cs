@@ -2,6 +2,7 @@ using LibraryManagement.Application.Commands.BookReviews;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LibraryManagement.API.Controllers
 {
@@ -17,15 +18,27 @@ namespace LibraryManagement.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("{id}/reviews")]
-        public async Task<IActionResult> CreateReview(int id, [FromBody] CreateBookReviewCommand command)
+        [HttpGet("{bookId:int}/reviews/{reviewId:int}")]
+        public async Task<IActionResult> GetReviewById()
         {
-            command.BookId = id;
-            var reviewId = await _mediator.Send(command);
+            return null;
+        }
+
+        [Authorize]
+        [HttpPost("{bookId:int}/reviews")]
+        public async Task<IActionResult> CreateReview(int bookId, [FromBody] CreateBookReviewCommand command)
+        {
+            var secureCommand = command with
+            {
+                BookId = bookId,
+                ApplicationUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!)
+            };
+
+            var reviewId = await _mediator.Send(secureCommand);
+
             return CreatedAtAction(
-                actionName: "GetBookById",
-                controllerName: "Books",
-                routeValues: new { id = command.BookId },
+                actionName: nameof(GetReviewById),
+                routeValues: new { id = command.BookId, reviewId = reviewId },
                 value: new { id = reviewId });
         }
     }
