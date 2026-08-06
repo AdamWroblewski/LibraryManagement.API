@@ -1,13 +1,10 @@
-using FluentValidation;
 using LibraryManagement.API.DataSeed;
 using LibraryManagement.API.Extensions;
 using LibraryManagement.Application;
-using LibraryManagement.Application.CustomExceptions;
 using LibraryManagement.Infrastructure;
 using LibraryManagement.Infrastructure.Data;
 using LibraryManagement.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -22,6 +19,14 @@ var logPath = Path.Combine(
     "Application",
     "errors-.txt");
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails(options =>
+    options.CustomizeProblemDetails = ctx =>
+    {
+        //ctx.ProblemDetails.Extensions.Remove("exception");
+        //ctx.ProblemDetails.Extensions.Remove("headers");
+    }
+);
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -105,60 +110,14 @@ builder.Logging.AddDebug();   // Logs to debug window
 var app = builder.Build();
 
 app.UseCors("AllowSpecificOrigins");
-app.UseExceptionHandler(errorApp =>
-{
-    errorApp.Run(async context =>
-    {
-        var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
-        if (exceptionHandlerFeature == null) return;
-
-        var exception = exceptionHandlerFeature.Error;
-        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-
-        context.Response.ContentType = "application/json";
-
-        switch (exception)
-        {
-            case ValidationException validationException:
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                logger.LogWarning(exception, "Validation failed for request: {Path}", context.Request.Path);
-
-                var errors = validationException.Errors
-                    .GroupBy(e => e.PropertyName)
-                    .ToDictionary(
-                        g => g.Key,
-                        g => g.Select(e => e.ErrorMessage).ToArray()
-                    );
-
-                await context.Response.WriteAsJsonAsync(new { errors });
-                break;
-
-            case EntityNotFoundException:
-            case KeyNotFoundException:
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
-                logger.LogWarning(exception, "Resource not found at path: {Path}", context.Request.Path);
-                await context.Response.WriteAsJsonAsync(new { errors = exception.Message });
-                break;
-
-            case InvalidOperationException:
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                logger.LogWarning(exception, "Invalid operation attempt: {Path}", context.Request.Path);
-                await context.Response.WriteAsJsonAsync(new { errors = exception.Message });
-                break;
-
-            default:
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                logger.LogError(exception, "An unhandled exception occurred while processing path: {Path}", context.Request.Path);
-                await context.Response.WriteAsJsonAsync(new { errors = "An unhandled server error occurred." });
-                break;
-        }
-    });
-});
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.EnablePersistAuthorization();
+    });
 
     app.ApplyMigrations<ApplicationDbContext>();
     await SeedDataAsync(app);
