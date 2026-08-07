@@ -4,7 +4,7 @@ using MediatR;
 
 namespace LibraryManagement.Application.Commands.Books
 {
-    public class CreateBookCommand : IRequest<Result<int>>
+    public class CreateBookCommand : IRequest<int>
     {
         public string Title { get; set; }
         public string Author { get; set; }

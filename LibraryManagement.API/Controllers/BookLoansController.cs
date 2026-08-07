@@ -20,12 +20,12 @@ namespace LibraryManagement.API.Controllers
 
         [Authorize]
         [HttpGet("book/{bookId:int}")]
-        public async Task<ActionResult> GetActiveLoansByBookId(int bookId)
+        public async Task<ActionResult> GetActiveLoansByBookId(int bookId, CancellationToken cancellationToken)
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var query = new GetActiveLoansQuery(bookId, userId);
 
-            var result = await _mediator.Send(query);
+            var result = await _mediator.Send(query, cancellationToken);
 
             return Ok(result);
         }

@@ -1,10 +1,9 @@
-﻿using FluentResults;
-using LibraryManagement.Application.Interfaces;
+﻿using LibraryManagement.Application.Interfaces;
 using MediatR;
 
 namespace LibraryManagement.Application.Commands.Auth
 {
-    public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<string>>
+    public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, string>
     {
         private readonly IIdentityService _identityService;
 
@@ -13,19 +12,9 @@ namespace LibraryManagement.Application.Commands.Auth
             _identityService = identityService;
         }
 
-        public async Task<Result<string>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
-            string tokenResult = default;
-            try
-            {
-                tokenResult = await _identityService.LoginAsync(request.Email, request.Password);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Result.Fail<string>(ex.Message);
-            }
-
-            return Result.Ok(tokenResult);
+            return await _identityService.LoginAsync(request.Email, request.Password);
         }
     }
 }

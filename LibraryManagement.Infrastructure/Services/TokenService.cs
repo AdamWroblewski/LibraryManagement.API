@@ -20,8 +20,10 @@ namespace LibraryManagement.Infrastructure.Services
             _userManager = userManager;
         }
 
-        public async Task<string> GenerateTokenAsync(ApplicationUser user)
+        public async Task<string> GenerateTokenAsync(ApplicationUser user, CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
@@ -31,6 +33,8 @@ namespace LibraryManagement.Infrastructure.Services
             };
 
             var roles = await _userManager.GetRolesAsync(user);
+            cancellationToken.ThrowIfCancellationRequested();
+
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -40,7 +44,7 @@ namespace LibraryManagement.Infrastructure.Services
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
+                expires: DateTime.UtcNow.AddHours(20000),
                 signingCredentials: creds
             );
 

@@ -19,7 +19,7 @@ namespace LibraryManagement.Application.Queries.Books
 
         public async Task<BookDto> Handle(GetBookByIdQuery request, CancellationToken cancellationToken)
         {
-            var book = await _repository.GetByIdAsync(request.Id);
+            var book = await _repository.GetByIdAsync(request.Id, cancellationToken);
             if (book == null)
                 throw new EntityNotFoundException("Book");
 

@@ -20,47 +20,47 @@ namespace LibraryManagement.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<BookDto>>> GetAll()
+        public async Task<ActionResult<List<BookDto>>> GetAll(CancellationToken cancellationToken)
         {
             var query = new GetAllBooksQuery();
-            var books = await _mediator.Send(query);
+            var books = await _mediator.Send(query, cancellationToken);
             return Ok(books);
         }
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<List<BookDto>>> GetById(int id)
+        public async Task<ActionResult<BookDto>> GetById(int id, CancellationToken cancellationToken)
         {
             var query = new GetBookByIdQuery(id);
-            var book = await _mediator.Send(query);
+            var book = await _mediator.Send(query, cancellationToken);
             return Ok(book);
         }
 
         [Authorize(Roles = "Employee")]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateBookCommand command)
+        public async Task<IActionResult> Create([FromBody] CreateBookCommand command, CancellationToken cancellationToken)
         {
-            var bookId = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { id = bookId }, bookId);
+            var bookId = await _mediator.Send(command, cancellationToken);
+            return CreatedAtAction(nameof(GetById), new { id = bookId }, new { id = bookId });
         }
 
         [Authorize(Roles = "Employee")]
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateBookCommand command)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateBookCommand command, CancellationToken cancellationToken)
         {
             var secureCommand = command with
             {
                 Id = id
             };
 
-            await _mediator.Send(secureCommand);
+            await _mediator.Send(secureCommand, cancellationToken);
             return NoContent();
         }
 
         [Authorize(Roles = "Employee")]
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new DeleteBookByIdCommand(id));
+            var result = await _mediator.Send(new DeleteBookByIdCommand(id), cancellationToken);
 
             if (!result)
                 return NotFound();

@@ -43,8 +43,7 @@ builder.Services.AddCors(options =>
         policy =>
     {
         policy.WithOrigins(
-                  "http://localhost:4200",
-                  "https://thankful-cliff-089e04a03.2.azurestaticapps.net"
+                  "http://localhost:4200"
               )
               .AllowAnyMethod()
               .AllowAnyHeader();

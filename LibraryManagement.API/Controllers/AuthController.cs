@@ -1,6 +1,7 @@
 ﻿using LibraryManagement.Application.Commands.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 
 namespace LibraryManagement.API.Controllers
 {
@@ -16,27 +17,20 @@ namespace LibraryManagement.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
+        public async Task<IActionResult> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(command);
-            if (!result.IsSuccess)
-            {
-                return BadRequest(result.Errors);
-            }
+            var newUserId = await _mediator.Send(command, cancellationToken);
 
             //TODO: change to CreatedAtAction
-            return Created($"/api/users/{result.Value}", new { id = result.Value });
+            return Created($"/api/users/{newUserId}", new { id = newUserId });
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginUserCommand command)
+        public async Task<IActionResult> Login(LoginUserCommand command, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(command);
+            string token = await _mediator.Send(command, cancellationToken);
 
-            if (result.IsSuccess)
-                return Ok(new { token = result.Value });
-
-            return BadRequest(new { errors = result.Errors });
+            return Ok(new { token });
         }
     }
 }

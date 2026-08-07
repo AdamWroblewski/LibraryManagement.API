@@ -11,7 +11,7 @@
         public DateTime? LoanDate { get; set; }
         public DateTime? ReturnDate { get; set; }
 
-        public BookLoan(int bookId, int applicationUserId, bool isReservation, DateTime? reservationDate)
+        public BookLoan(int bookId, int applicationUserId, bool isReservation, DateTime? reservationDate, Book )
         {
             BookId = bookId;
             ApplicationUserId = applicationUserId;

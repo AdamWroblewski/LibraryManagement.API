@@ -2,5 +2,5 @@
 
 namespace LibraryManagement.Application.Commands.BookReservations
 {
-    public record CreateBookReservationCommand(int bookId, int applicationUserId) : IRequest<int>;
+    public record CreateBookReservationCommand(int BookId, int ApplicationUserId) : IRequest<int>;
 }

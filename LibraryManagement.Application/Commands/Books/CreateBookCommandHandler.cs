@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
-using FluentResults;
-using LibraryManagement.Application.DTOs;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Domain.Interfaces;
 using MediatR;
 
 namespace LibraryManagement.Application.Commands.Books
 {
-    public class CreateBookCommandHandler : IRequestHandler<CreateBookCommand, Result<int>>
+    public class CreateBookCommandHandler : IRequestHandler<CreateBookCommand, int>
     {
         private readonly IBookRepository _bookRepository;
         private readonly IMapper _mapper;
@@ -18,13 +16,14 @@ namespace LibraryManagement.Application.Commands.Books
             _mapper = mapper;
         }
 
-        public async Task<Result<int>> Handle(CreateBookCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(CreateBookCommand request, CancellationToken cancellationToken)
         {
             var book = new Book(request.Title, request.Author, request.ISBN, request.PublicationYear, request.Publisher);
+            await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
 
-            await _bookRepository.AddAsync(book);
+            await _bookRepository.AddAsync(book, cancellationToken);
 
-            return Result.Ok(book.Id);
+            return book.Id;
         }
     }
 }

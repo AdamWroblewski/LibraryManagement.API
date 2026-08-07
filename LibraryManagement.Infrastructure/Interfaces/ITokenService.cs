@@ -4,6 +4,6 @@ namespace LibraryManagement.Infrastructure.Interfaces
 {
     public interface ITokenService
     {
-        Task<string> GenerateTokenAsync(ApplicationUser user);
+        Task<string> GenerateTokenAsync(ApplicationUser user, CancellationToken cancellationToken = default);
     }
 }

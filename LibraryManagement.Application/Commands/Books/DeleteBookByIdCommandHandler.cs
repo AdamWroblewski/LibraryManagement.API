@@ -17,12 +17,12 @@ namespace LibraryManagement.Application.Commands.Books
 
         public async Task<bool> Handle(DeleteBookByIdCommand request, CancellationToken cancellationToken)
         {
-            var book = await _bookRepository.GetByIdAsync(request.Id);
+            var book = await _bookRepository.GetByIdAsync(request.Id, cancellationToken);
 
             if (book is null)
                 return false;
 
-            await _bookRepository.DeleteAsync(book);
+            await _bookRepository.DeleteAsync(book, cancellationToken);
 
             return true;
         }
