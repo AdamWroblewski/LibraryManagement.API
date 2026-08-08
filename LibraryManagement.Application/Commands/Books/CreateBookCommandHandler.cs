@@ -19,7 +19,6 @@ namespace LibraryManagement.Application.Commands.Books
         public async Task<int> Handle(CreateBookCommand request, CancellationToken cancellationToken)
         {
             var book = new Book(request.Title, request.Author, request.ISBN, request.PublicationYear, request.Publisher);
-            await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
 
             await _bookRepository.AddAsync(book, cancellationToken);
 
