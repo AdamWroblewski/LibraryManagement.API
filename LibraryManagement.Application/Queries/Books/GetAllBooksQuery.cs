@@ -1,9 +1,8 @@
 ﻿using LibraryManagement.Application.DTOs;
+using LibraryManagement.Application.Models;
 using MediatR;
 
 namespace LibraryManagement.Application.Queries.Books
 {
-    public class GetAllBooksQuery : IRequest<List<BookListDto>>
-    {
-    }
+    public record GetAllBooksQuery(int PageNumber, int PageSize) : IRequest<PagedList<BookListDto>>;
 }

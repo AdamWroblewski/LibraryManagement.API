@@ -1,8 +1,10 @@
 ﻿using LibraryManagement.Application.Interfaces;
+using LibraryManagement.Application.Interfaces.QueryServices;
 using LibraryManagement.Domain.Interfaces;
 using LibraryManagement.Infrastructure.Data;
 using LibraryManagement.Infrastructure.Identity;
 using LibraryManagement.Infrastructure.Interfaces;
+using LibraryManagement.Infrastructure.Queries;
 using LibraryManagement.Infrastructure.Repositories;
 using LibraryManagement.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
@@ -24,6 +26,7 @@ namespace LibraryManagement.Infrastructure
             services.AddScoped<IBookLoanRepository, BookLoanRepository>();
             services.AddScoped<IBookReviewRepository, BookReviewRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IBookQueries, BookQueries>();
 
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()

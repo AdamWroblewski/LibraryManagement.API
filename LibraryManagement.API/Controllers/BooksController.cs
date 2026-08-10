@@ -1,5 +1,6 @@
 using LibraryManagement.Application.Commands.Books;
 using LibraryManagement.Application.DTOs;
+using LibraryManagement.Application.Models;
 using LibraryManagement.Application.Queries.Books;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -21,9 +22,9 @@ namespace LibraryManagement.API.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<List<BookListDto>>> GetAll(CancellationToken cancellationToken)
+        public async Task<ActionResult<PagedList<BookListDto>>> GetAll(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            var query = new GetAllBooksQuery();
+            var query = new GetAllBooksQuery(pageNumber, pageSize);
             var books = await _mediator.Send(query, cancellationToken);
             return Ok(books);
         }

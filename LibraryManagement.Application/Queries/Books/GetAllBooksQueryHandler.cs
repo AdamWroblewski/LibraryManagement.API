@@ -1,25 +1,26 @@
 ﻿using AutoMapper;
 using LibraryManagement.Application.DTOs;
-using LibraryManagement.Domain.Interfaces;
+using LibraryManagement.Application.Interfaces.QueryServices;
+using LibraryManagement.Application.Models;
 using MediatR;
 
 namespace LibraryManagement.Application.Queries.Books
 {
-    public class GetAllBooksQueryHandler : IRequestHandler<GetAllBooksQuery, List<BookListDto>>
+    public class GetAllBooksQueryHandler : IRequestHandler<GetAllBooksQuery, PagedList<BookListDto>>
     {
-        private readonly IBookRepository _bookRepository;
+        private readonly IBookQueries _bookQueries;
         private readonly IMapper _mapper;
 
-        public GetAllBooksQueryHandler(IBookRepository bookRepository, IMapper mapper)
+        public GetAllBooksQueryHandler(IBookQueries bookQueries, IMapper mapper)
         {
-            _bookRepository = bookRepository;
+            _bookQueries = bookQueries;
             _mapper = mapper;
         }
 
-        public async Task<List<BookListDto>> Handle(GetAllBooksQuery request, CancellationToken cancellationToken)
+        public async Task<PagedList<BookListDto>> Handle(GetAllBooksQuery request, CancellationToken cancellationToken)
         {
-            var books = await _bookRepository.GetAllAsync(cancellationToken);
-            return _mapper.Map<List<BookListDto>>(books);
+            var books = await _bookQueries.GetPagedBooksAsync(request.PageNumber, request.PageSize, cancellationToken);
+            return books;
         }
     }
 }
