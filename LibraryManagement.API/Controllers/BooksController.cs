@@ -19,18 +19,23 @@ namespace LibraryManagement.API.Controllers
             _mediator = mediator;
         }
 
+        [Authorize]
         [HttpGet]
-        public async Task<ActionResult<List<BookDto>>> GetAll(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<BookListDto>>> GetAll(CancellationToken cancellationToken)
         {
             var query = new GetAllBooksQuery();
             var books = await _mediator.Send(query, cancellationToken);
             return Ok(books);
         }
 
+        [Authorize]
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<BookDto>> GetById(int id, CancellationToken cancellationToken)
+        public async Task<ActionResult<BookDetailsDto>> GetById(int id, CancellationToken cancellationToken)
         {
-            var query = new GetBookByIdQuery(id);
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+             
+            var query = new GetBookByIdQuery(id, userId);
             var book = await _mediator.Send(query, cancellationToken);
             return Ok(book);
         }

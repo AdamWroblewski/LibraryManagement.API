@@ -15,7 +15,7 @@ namespace LibraryManagement.Application.Commands.BookReviews
 
         public async Task<int> Handle(CreateBookReviewCommand request, CancellationToken cancellationToken)
         {
-            var bookReview = new BookReview(request.BookId, request.ApplicationUserId, request.Rate, request.Comment);
+            var bookReview = new BookReview(request.BookId, request.UserId, request.Rate, request.Comment);
             await _bookReviewRepository.AddAsync(bookReview, cancellationToken);
             return bookReview.Id;
         }

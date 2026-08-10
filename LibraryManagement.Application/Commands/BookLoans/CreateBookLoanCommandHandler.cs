@@ -4,25 +4,25 @@ using MediatR;
 
 namespace LibraryManagement.Application.Commands.BookReservations
 {
-    public class CreateBookReservationCommandHandler : IRequestHandler<CreateBookReservationCommand, int>
+    public class CreateBookLoanCommandHandler : IRequestHandler<CreateBookLoanCommand, int>
     {
         private readonly IBookLoanRepository _bookLoanRepository;
-        public CreateBookReservationCommandHandler(IBookLoanRepository bookLoansRepository)
+        public CreateBookLoanCommandHandler(IBookLoanRepository bookLoansRepository)
         {
             _bookLoanRepository = bookLoansRepository;
         }
 
-        public async Task<int> Handle(CreateBookReservationCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(CreateBookLoanCommand request, CancellationToken cancellationToken)
         {
             var existingReservation = await _bookLoanRepository
-                .GetActiveLoanAsync(request.ApplicationUserId, request.BookId);
+                .GetReservedOrActiveLoanAsync(request.ApplicationUserId, request.BookId);
 
             if (existingReservation != null)
             {
                 throw new InvalidOperationException("You already have an active reservation for this book.");
             }
 
-            var bookLoan = new BookLoan(request.BookId, request.ApplicationUserId, true, DateTime.UtcNow);
+            var bookLoan = new BookLoan(request.BookId, request.ApplicationUserId, request.Status);
 
             await _bookLoanRepository.AddAsync(bookLoan, cancellationToken);
 

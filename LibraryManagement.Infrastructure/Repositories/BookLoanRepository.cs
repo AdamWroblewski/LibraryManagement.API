@@ -16,23 +16,14 @@ namespace LibraryManagement.Infrastructure.Repositories
         /// the reservation day is counted as one whole day
         /// </summary>
         /// <returns>A list of active <see cref="BookLoan"/> entities.</returns>
-        public async Task<BookLoan> GetActiveLoanAsync(int userId, int bookId, CancellationToken cancellation = default)
+        public async Task<BookLoan?> GetReservedOrActiveLoanAsync(int userId, int bookId, CancellationToken cancellation = default)
         {
-            var fiveDaysAgo = DateTime.UtcNow.Date.AddDays(-5);
-
             return await _context.BookLoans
-                .Where(l => l.ApplicationUserId == userId && l.BookId == bookId &&
-                    (
-                        (l.LoanDate != null &&
-                        l.ReturnDate == null) ||
-                        (l.LoanDate == null &&
-                        l.IsReservation && 
-                        l.ReservationDate != null && 
-                        l.ReservationDate.Value.Date >= fiveDaysAgo)
-                    )
-                )
+                .Where(l => l.UserId == userId &&
+                    l.BookId == bookId &&
+                    (l.Status == LoanStatus.Reserved || l.Status == LoanStatus.Active))
                 .AsNoTracking()
-                .FirstOrDefaultAsync(cancellation);
+                .SingleOrDefaultAsync(cancellation);
         }
     }
 }

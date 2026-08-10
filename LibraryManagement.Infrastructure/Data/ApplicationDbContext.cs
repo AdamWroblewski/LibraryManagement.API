@@ -32,7 +32,7 @@ namespace LibraryManagement.Infrastructure.Data
             {
                 builder.HasOne<ApplicationUser>()
                        .WithMany(u => u.BookLoans)
-                       .HasForeignKey(bl => bl.ApplicationUserId)
+                       .HasForeignKey(bl => bl.UserId)
                        .OnDelete(DeleteBehavior.Restrict);
             });
 

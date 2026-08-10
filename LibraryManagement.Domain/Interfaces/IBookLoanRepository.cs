@@ -4,6 +4,6 @@ namespace LibraryManagement.Domain.Interfaces
 {
     public interface IBookLoanRepository : IRepository<BookLoan>
     {
-        Task<BookLoan> GetActiveLoanAsync(int userId, int bookId, CancellationToken cancellation = default);
+        Task<BookLoan?> GetReservedOrActiveLoanAsync(int userId, int bookId, CancellationToken cancellation = default);
     }
 }

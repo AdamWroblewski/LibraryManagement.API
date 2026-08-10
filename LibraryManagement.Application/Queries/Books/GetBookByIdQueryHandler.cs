@@ -6,7 +6,7 @@ using MediatR;
 
 namespace LibraryManagement.Application.Queries.Books
 {
-    internal class GetBookByIdQueryHandler : IRequestHandler<GetBookByIdQuery, BookDto>
+    internal class GetBookByIdQueryHandler : IRequestHandler<GetBookByIdQuery, BookDetailsDto>
     {
         private readonly IBookRepository _repository;
         private readonly IMapper _mapper;
@@ -17,13 +17,13 @@ namespace LibraryManagement.Application.Queries.Books
             _mapper = mapper;
         }
 
-        public async Task<BookDto> Handle(GetBookByIdQuery request, CancellationToken cancellationToken)
+        public async Task<BookDetailsDto> Handle(GetBookByIdQuery request, CancellationToken cancellationToken)
         {
             var book = await _repository.GetByIdAsync(request.Id, cancellationToken);
             if (book == null)
                 throw new EntityNotFoundException("Book");
 
-            return _mapper.Map<BookDto>(book);
+            return _mapper.Map<BookDetailsDto>(book);
         }
     }
 }

@@ -2,21 +2,32 @@
 {
     public class BookLoan
     {
-        public int Id { get; set; }
-        public int BookId { get; set; }
-        public Book Book { get; set; }
-        public int ApplicationUserId { get; set; }
-        public bool IsReservation { get; set; }
-        public DateTime? ReservationDate { get; set; }
-        public DateTime? LoanDate { get; set; }
-        public DateTime? ReturnDate { get; set; }
+        public int Id { get; private set; }
+        public int BookId { get; private set; }
+        public Book? Book { get; private set; }
+        public int UserId { get; private set; }
 
-        public BookLoan(int bookId, int applicationUserId, bool isReservation, DateTime? reservationDate)
+        public LoanStatus Status { get; private set; }
+        public DateTime ReservedAt { get; private set; }
+        public DateTime? CheckedOutAt { get; private set; }
+        public DateTime? DueAt { get; private set; }
+        public DateTime? ReturnedAt { get; private set; }
+
+        public BookLoan(int bookId, int userId, LoanStatus status)
         {
             BookId = bookId;
-            ApplicationUserId = applicationUserId;
-            IsReservation = isReservation;
-            ReservationDate = reservationDate;
+            UserId = userId;
+            Status = status;
+            ReservedAt = DateTime.UtcNow;
+            CheckedOutAt = status == LoanStatus.Active ? DateTime.UtcNow : null;
+        }
+
+        public void MarkAsExpired()
+        {
+            if (Status != LoanStatus.Reserved)
+                throw new InvalidOperationException("Only reserved loans can expire.");
+
+            Status = LoanStatus.Expired;
         }
     }
 }

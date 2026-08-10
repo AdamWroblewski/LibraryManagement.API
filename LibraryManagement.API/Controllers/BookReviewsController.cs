@@ -31,7 +31,7 @@ namespace LibraryManagement.API.Controllers
             var secureCommand = command with
             {
                 BookId = bookId,
-                ApplicationUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!)
+                UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!)
             };
 
             var reviewId = await _mediator.Send(secureCommand);
