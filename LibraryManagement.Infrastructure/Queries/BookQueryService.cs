@@ -9,12 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.Infrastructure.Queries
 {
-    public class BookQueries : IBookQueries
+    public class BookQueryService : IBookQueryService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
 
-        public BookQueries(ApplicationDbContext context, IMapper mapper)
+        public BookQueryService(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -24,6 +24,7 @@ namespace LibraryManagement.Infrastructure.Queries
         {
             return await _context.Books
                 .AsNoTracking()
+                .OrderBy(x => x.Title)
                 .ProjectTo<BookListDto>(_mapper.ConfigurationProvider)
                 .ToPagedListAsync(pageNumber, pageSize, cancellationToken);
         }

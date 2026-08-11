@@ -1,5 +1,4 @@
-﻿using FluentResults;
-using LibraryManagement.Application.Interfaces;
+﻿using LibraryManagement.Application.Interfaces;
 using MediatR;
 
 namespace LibraryManagement.Application.Commands.Auth

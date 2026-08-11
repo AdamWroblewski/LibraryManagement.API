@@ -36,7 +36,6 @@ namespace LibraryManagement.Infrastructure.Data
                        .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // BookReview -> ApplicationUser Configuration (if navigation exists)
             modelBuilder.Entity<BookReview>(entity =>
             {
                 entity.HasOne<ApplicationUser>()

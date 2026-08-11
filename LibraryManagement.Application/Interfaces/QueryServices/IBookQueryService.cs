@@ -3,7 +3,7 @@ using LibraryManagement.Application.Models;
 
 namespace LibraryManagement.Application.Interfaces.QueryServices
 {
-    public interface IBookQueries
+    public interface IBookQueryService
     {
         Task<PagedList<BookListDto>> GetPagedBooksAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
     }

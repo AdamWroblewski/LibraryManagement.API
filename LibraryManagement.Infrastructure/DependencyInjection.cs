@@ -26,7 +26,7 @@ namespace LibraryManagement.Infrastructure
             services.AddScoped<IBookLoanRepository, BookLoanRepository>();
             services.AddScoped<IBookReviewRepository, BookReviewRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
-            services.AddScoped<IBookQueries, BookQueries>();
+            services.AddScoped<IBookQueryService, BookQueryService>();
 
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
