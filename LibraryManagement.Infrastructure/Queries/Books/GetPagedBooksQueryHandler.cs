@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.Infrastructure.Queries.Books
 {
-    public class GetAllBooksQueryHandler : IRequestHandler<GetPagedBooksQuery, PagedList<BookListDto>>
+    public class GetPagedBooksQueryHandler : IRequestHandler<GetPagedBooksQuery, PagedList<BookListDto>>
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
 
-        public GetAllBooksQueryHandler(ApplicationDbContext context, IMapper mapper)
+        public GetPagedBooksQueryHandler(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
