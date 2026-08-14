@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace LibraryManagement.Infrastructure
 {
@@ -21,12 +22,13 @@ namespace LibraryManagement.Infrastructure
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
             services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IBookRepository, BookRepository>();
             services.AddScoped<IBookLoanRepository, BookLoanRepository>();
             services.AddScoped<IBookReviewRepository, BookReviewRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
-            services.AddScoped<IBookQueryService, BookQueryService>();
 
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()

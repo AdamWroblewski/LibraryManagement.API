@@ -22,9 +22,9 @@ namespace LibraryManagement.API.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<PagedList<BookListDto>>> GetAll(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagedList<BookListDto>>> GetPagedBooks(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            var query = new GetAllBooksQuery(pageNumber, pageSize);
+            var query = new GetPagedBooksQuery(pageNumber, pageSize);
             var books = await _mediator.Send(query, cancellationToken);
             return Ok(books);
         }
@@ -33,10 +33,9 @@ namespace LibraryManagement.API.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<BookDetailsDto>> GetById(int id, CancellationToken cancellationToken)
         {
-
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
              
-            var query = new GetBookByIdQuery(id, userId);
+            var query = new GetBookByIdQuery(userId, id);
             var book = await _mediator.Send(query, cancellationToken);
             return Ok(book);
         }

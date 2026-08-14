@@ -15,14 +15,14 @@ namespace LibraryManagement.Application.Commands.BookReservations
         public async Task<int> Handle(CreateBookLoanCommand request, CancellationToken cancellationToken)
         {
             var existingReservation = await _bookLoanRepository
-                .GetReservedOrActiveLoanAsync(request.ApplicationUserId, request.BookId);
+                .GetReservedOrActiveLoanAsync(request.UserId, request.BookId);
 
             if (existingReservation != null)
             {
-                throw new InvalidOperationException("You already have an active reservation for this book.");
+                throw new InvalidOperationException("You already have an active reservation/loan for this book.");
             }
 
-            var bookLoan = new BookLoan(request.BookId, request.ApplicationUserId, request.Status);
+            var bookLoan = new BookLoan(request.BookId, request.UserId);
 
             await _bookLoanRepository.AddAsync(bookLoan, cancellationToken);
 

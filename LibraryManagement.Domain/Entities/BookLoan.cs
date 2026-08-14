@@ -13,6 +13,14 @@
         public DateTime? DueAt { get; private set; }
         public DateTime? ReturnedAt { get; private set; }
 
+        public BookLoan(int bookId, int userId)
+        {
+            BookId = bookId;
+            UserId = userId;
+            Status = LoanStatus.Reserved;
+            ReservedAt = DateTime.UtcNow;
+        }
+
         public BookLoan(int bookId, int userId, LoanStatus status)
         {
             BookId = bookId;

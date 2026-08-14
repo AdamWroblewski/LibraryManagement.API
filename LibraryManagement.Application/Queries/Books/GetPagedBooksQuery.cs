@@ -4,5 +4,5 @@ using MediatR;
 
 namespace LibraryManagement.Application.Queries.Books
 {
-    public record GetAllBooksQuery(int PageNumber, int PageSize) : IRequest<PagedList<BookListDto>>;
+    public record GetPagedBooksQuery(int PageNumber, int PageSize) : IRequest<PagedList<BookListDto>>;
 }
