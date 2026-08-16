@@ -31,11 +31,11 @@ namespace LibraryManagement.API.Controllers
 
         [Authorize]
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<BookDetailsDto>> GetById(int id, CancellationToken cancellationToken)
+        public async Task<ActionResult<BookDetailsDto>> GetBookDetails(int id, CancellationToken cancellationToken)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
              
-            var query = new GetBookByIdQuery(userId, id);
+            var query = new GetBookDetailsQuery(id, userId);
             var book = await _mediator.Send(query, cancellationToken);
             return Ok(book);
         }
@@ -45,7 +45,7 @@ namespace LibraryManagement.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateBookCommand command, CancellationToken cancellationToken)
         {
             var bookId = await _mediator.Send(command, cancellationToken);
-            return CreatedAtAction(nameof(GetById), new { id = bookId }, new { id = bookId });
+            return CreatedAtAction(nameof(GetBookDetails), new { id = bookId }, new { id = bookId });
         }
 
         [Authorize(Roles = "Employee")]

@@ -4,5 +4,5 @@ using System.Text.Json.Serialization;
 
 namespace LibraryManagement.Application.Queries.Books
 {
-    public record GetBookByIdQuery([property: JsonIgnore] int UserId, int Id) : IRequest<BookDetailsDto>;
+    public record GetBookDetailsQuery(int Id, [property: JsonIgnore] int UserId) : IRequest<BookDetailsDto>;
 }

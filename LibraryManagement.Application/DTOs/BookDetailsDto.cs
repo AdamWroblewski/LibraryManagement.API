@@ -8,7 +8,8 @@
         public string ISBN { get; set; }
         public int PublicationYear { get; set; }
         public string Publisher { get; set; }
-        public ICollection<BookLoanDto> Loans { get; set; } = new List<BookLoanDto>();
+        public bool IsAvailable { get; set; }
+        public ICollection<BookLoanDto> CurrentUserLoans { get; set; } = new List<BookLoanDto>();
         public ICollection<BookReviewDto> Reviews { get; set; } = new List<BookReviewDto>();
     }
 }

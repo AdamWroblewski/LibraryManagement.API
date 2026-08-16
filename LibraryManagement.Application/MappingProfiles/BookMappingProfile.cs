@@ -8,8 +8,15 @@ namespace LibraryManagement.Application.MappingProfiles
     {
         public BookMappingProfile()
         {
+            int userId = 0;
+
             CreateMap<Book, BookListDto>();
-            CreateMap<Book, BookDetailsDto>().ReverseMap();
+
+            CreateMap<Book, BookDetailsDto>()
+            .ForMember(dest => dest.IsAvailable,
+                opt => opt.MapFrom(src => !src.Loans.Any(l => l.ReturnedAt == null)))
+            .ForMember(dest => dest.CurrentUserLoans,
+                    opt => opt.MapFrom(src => src.Loans.Where(l => l.UserId == userId)));
         }
     }
 }
