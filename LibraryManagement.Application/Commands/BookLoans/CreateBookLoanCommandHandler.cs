@@ -6,7 +6,7 @@ namespace LibraryManagement.Application.Commands.BookReservations
 {
     public class CreateBookLoanCommandHandler : IRequestHandler<CreateBookLoanCommand, int>
     {
-        private readonly IBookLoanRepository _bookLoanRepository;
+        private readonly IBookLoanRepository _bookLoanRepository; 
         public CreateBookLoanCommandHandler(IBookLoanRepository bookLoansRepository)
         {
             _bookLoanRepository = bookLoansRepository;

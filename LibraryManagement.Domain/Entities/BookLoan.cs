@@ -12,6 +12,11 @@
         public DateTime? CheckedOutAt { get; private set; }
         public DateTime? DueAt { get; private set; }
         public DateTime? ReturnedAt { get; private set; }
+        public DateTime? ExpiredAt { get; private set; }
+        public DateTime HoldExpiresAt => ReservedAt.AddHours(HoldPolicyHours);
+
+
+        public const double HoldPolicyHours = 72;
 
         public BookLoan(int bookId, int userId)
         {
@@ -33,9 +38,12 @@
         public void MarkAsExpired()
         {
             if (Status != LoanStatus.Reserved)
-                throw new InvalidOperationException("Only reserved loans can expire.");
+            {
+                throw new InvalidOperationException($"Cannot expire a loan with status '{Status}'. Only 'Reserved' loans can be expired.");
+            }
 
             Status = LoanStatus.Expired;
+            ExpiredAt = DateTime.UtcNow;
         }
     }
 }

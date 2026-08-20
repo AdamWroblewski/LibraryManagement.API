@@ -1,6 +1,7 @@
 ﻿using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Application.Interfaces.QueryServices;
 using LibraryManagement.Domain.Interfaces;
+using LibraryManagement.Infrastructure.BackgroundServices;
 using LibraryManagement.Infrastructure.Data;
 using LibraryManagement.Infrastructure.Identity;
 using LibraryManagement.Infrastructure.Interfaces;
@@ -29,6 +30,8 @@ namespace LibraryManagement.Infrastructure
             services.AddScoped<IBookLoanRepository, BookLoanRepository>();
             services.AddScoped<IBookReviewRepository, BookReviewRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
+
+            services.AddHostedService<ExpiredReservationsCleanupService>();
 
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()

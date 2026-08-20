@@ -9,8 +9,17 @@ namespace LibraryManagement.Application.MappingProfiles
     {
         public BookLoanMappingProfile()
         {
+            DateTime utcNow = DateTime.MinValue;
+
             CreateMap<CreateBookLoanCommand, BookLoan>();
-            CreateMap<BookLoan, BookLoanDto>();
+
+            CreateMap<BookLoan, BookLoanDto>()
+                .ForMember(dest => dest.ReservationExpiresAt, opt => opt.MapFrom(src =>
+                    src.ReservedAt.AddHours(BookLoan.HoldPolicyHours)))
+                .ForMember(dest => dest.IsReservationExpired, opt => opt.MapFrom(src =>
+                    src.Status == LoanStatus.Expired ||
+                    src.Status == LoanStatus.Cancelled || 
+                    (src.Status == LoanStatus.Reserved && src.ReservedAt.AddHours(BookLoan.HoldPolicyHours) <= utcNow)));
         }
     }
 }
