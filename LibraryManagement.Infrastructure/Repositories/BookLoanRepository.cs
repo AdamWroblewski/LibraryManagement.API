@@ -14,10 +14,14 @@ namespace LibraryManagement.Infrastructure.Repositories
         /// <summary>
         /// </summary>
         /// <returns>A list of active <see cref="BookLoan"/> entities.</returns>
-        public async Task<bool> IsBookAvailableAsync(int bookId, CancellationToken cancellation = default)
+        public async Task<bool> IsBookAvailableAsync(int bookId, DateTime utcNow, CancellationToken cancellationToken = default)
         {
             return !await _context.BookLoans
-                .AnyAsync(l => l.BookId == bookId && l.Status != LoanStatus.Returned);
+                .AnyAsync(l => l.BookId == bookId && (
+                    l.Status == LoanStatus.Active ||
+                    l.Status == LoanStatus.Overdue ||
+                    (l.Status == LoanStatus.Reserved && l.ReservedAt.AddHours(BookLoan.HoldPolicyHours) > utcNow)
+                ), cancellationToken);
         }
     }
 }

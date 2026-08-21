@@ -4,6 +4,6 @@ namespace LibraryManagement.Domain.Interfaces
 {
     public interface IBookLoanRepository : IRepository<BookLoan>
     {
-        Task<bool> IsBookAvailableAsync(int bookId, CancellationToken cancellation = default);
+        Task<bool> IsBookAvailableAsync(int bookId, DateTime utcNow, CancellationToken cancellation = default);
     }
 }
