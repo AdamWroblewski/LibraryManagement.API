@@ -8,7 +8,7 @@ namespace LibraryManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BookLoansController : ControllerBase
+    public class BookLoansController : BaseApiController
     {
         private readonly IMediator _mediator;
 
@@ -19,14 +19,14 @@ namespace LibraryManagement.API.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult> CreateBookLoan([FromBody] CreateBookLoanCommand command)
+        public async Task<ActionResult> CreateBookLoan([FromBody] CreateBookLoanCommand command, CancellationToken cancellationToken)
         {
             var secureCommand = command with
             {
-                UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!)
+                UserId = UserId
             };
 
-            var loanId = await _mediator.Send(secureCommand); 
+            var loanId = await _mediator.Send(secureCommand, cancellationToken); 
             
             // TODO: change to CreatedAtAction()
             return StatusCode(StatusCodes.Status201Created, new { id = loanId });

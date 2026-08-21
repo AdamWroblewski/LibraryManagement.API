@@ -1,7 +1,6 @@
 ﻿using LibraryManagement.Application.Commands.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading;
 
 namespace LibraryManagement.API.Controllers
 {

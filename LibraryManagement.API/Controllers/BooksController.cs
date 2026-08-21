@@ -5,13 +5,12 @@ using LibraryManagement.Application.Queries.Books;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace LibraryManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BooksController : ControllerBase
+    public class BooksController : BaseApiController
     {
         private readonly IMediator _mediator;
 
@@ -25,7 +24,9 @@ namespace LibraryManagement.API.Controllers
         public async Task<ActionResult<PagedList<BookListDto>>> GetPagedBooks(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var query = new GetPagedBooksQuery(pageNumber, pageSize);
+            
             var books = await _mediator.Send(query, cancellationToken);
+            
             return Ok(books);
         }
 
@@ -33,10 +34,10 @@ namespace LibraryManagement.API.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<BookDetailsDto>> GetBookDetails(int id, CancellationToken cancellationToken)
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-             
-            var query = new GetBookDetailsQuery(id, userId);
+            var query = new GetBookDetailsQuery(id, UserId);
+
             var book = await _mediator.Send(query, cancellationToken);
+
             return Ok(book);
         }
 
@@ -45,6 +46,7 @@ namespace LibraryManagement.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateBookCommand command, CancellationToken cancellationToken)
         {
             var bookId = await _mediator.Send(command, cancellationToken);
+            
             return CreatedAtAction(nameof(GetBookDetails), new { id = bookId }, new { id = bookId });
         }
 
@@ -58,6 +60,7 @@ namespace LibraryManagement.API.Controllers
             };
 
             await _mediator.Send(secureCommand, cancellationToken);
+            
             return NoContent();
         }
 

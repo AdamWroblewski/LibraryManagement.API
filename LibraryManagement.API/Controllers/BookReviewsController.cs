@@ -2,13 +2,12 @@ using LibraryManagement.Application.Commands.BookReviews;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace LibraryManagement.API.Controllers
 {
     [Route("api/books")]
     [ApiController]
-    public class BookReviewsController : ControllerBase
+    public class BookReviewsController : BaseApiController
     {
         private readonly IMediator _mediator;
 
@@ -19,27 +18,42 @@ namespace LibraryManagement.API.Controllers
 
         [Authorize]
         [HttpGet("{bookId:int}/reviews/{reviewId:int}")]
-        public async Task<IActionResult> GetReviewById()
+        public async Task<IActionResult> GetById()
         {
             return null;
         }
 
         [Authorize]
         [HttpPost("{bookId:int}/reviews")]
-        public async Task<IActionResult> CreateReview(int bookId, [FromBody] CreateBookReviewCommand command)
+        public async Task<IActionResult> Create(int bookId, [FromBody] CreateBookReviewCommand command, CancellationToken cancellationToken)
         {
             var secureCommand = command with
             {
                 BookId = bookId,
-                UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!)
+                UserId = UserId
             };
 
-            var reviewId = await _mediator.Send(secureCommand);
+            var reviewId = await _mediator.Send(secureCommand, cancellationToken);
 
             return CreatedAtAction(
-                actionName: nameof(GetReviewById),
-                routeValues: new { id = command.BookId, reviewId = reviewId },
+                actionName: nameof(GetById),
+                routeValues: new { id = secureCommand.BookId, reviewId = reviewId },
                 value: new { id = reviewId });
+        }
+
+        [Authorize]
+        [HttpPut("{bookId:int}/reviews")]
+        public async Task<IActionResult> Update(int bookId, [FromBody] UpdateBookReviewCommand command, CancellationToken cancellationToken)
+        {
+            var secureCommand = command with
+            {
+                BookId = bookId,
+                UserId = UserId
+            };
+
+            var result = await _mediator.Send(secureCommand, cancellationToken);
+
+            return NoContent();
         }
     }
 }
