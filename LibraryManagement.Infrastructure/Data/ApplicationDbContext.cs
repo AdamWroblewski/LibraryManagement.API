@@ -40,7 +40,7 @@ namespace LibraryManagement.Infrastructure.Data
             {
                 entity.HasOne<ApplicationUser>()
                        .WithMany()
-                       .HasForeignKey(br => br.ApplicationUserId)
+                       .HasForeignKey(br => br.UserId)
                        .OnDelete(DeleteBehavior.Restrict);
             });
         }

@@ -4,5 +4,6 @@ namespace LibraryManagement.Domain.Interfaces
 {
     public interface IBookReviewRepository : IRepository<BookReview>
     {
+        Task<bool> HasReviewAsync(int bookId, int userId, CancellationToken cancellation = default);
     }
 }

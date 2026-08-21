@@ -1,4 +1,5 @@
-﻿using LibraryManagement.Domain.Entities;
+﻿using LibraryManagement.Application.CustomExceptions;
+using LibraryManagement.Domain.Entities;
 using LibraryManagement.Domain.Interfaces;
 using MediatR;
 
@@ -15,6 +16,12 @@ namespace LibraryManagement.Application.Commands.BookReviews
 
         public async Task<int> Handle(CreateBookReviewCommand request, CancellationToken cancellationToken)
         {
+            var hasReview = await _bookReviewRepository.HasReviewAsync(request.BookId, request.UserId);
+            if (hasReview)
+            {
+                throw new DuplicateResourceException("You have already added a review of this book. You can edit or remove it.");
+            }
+
             var bookReview = new BookReview(request.BookId, request.UserId, request.Rate, request.Comment);
             await _bookReviewRepository.AddAsync(bookReview, cancellationToken);
             return bookReview.Id;

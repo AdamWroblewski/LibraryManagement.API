@@ -108,6 +108,8 @@ builder.Logging.AddDebug();   // Logs to debug window
 
 var app = builder.Build();
 
+app.UseExceptionHandler();
+
 app.UseCors("AllowSpecificOrigins");
 
 if (app.Environment.IsDevelopment())

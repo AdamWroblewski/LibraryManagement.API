@@ -24,6 +24,15 @@ public class GlobalExceptionHandler : IExceptionHandler
                 CreateValidationProblemDetails(httpContext, validationEx)
             ),
 
+            InvalidOperationException => (
+                StatusCodes.Status400BadRequest,
+                CreateProblemDetails(
+                    httpContext,
+                    StatusCodes.Status400BadRequest,
+                    "Bad Request",
+                    exception.Message)
+            ),
+
             EntityNotFoundException or KeyNotFoundException => (
                 StatusCodes.Status404NotFound,
                 CreateProblemDetails(
@@ -33,12 +42,12 @@ public class GlobalExceptionHandler : IExceptionHandler
                     exception.Message)
             ),
 
-            InvalidOperationException => (
-                StatusCodes.Status400BadRequest,
+            DuplicateResourceException => (
+                StatusCodes.Status409Conflict,
                 CreateProblemDetails(
                     httpContext,
-                    StatusCodes.Status400BadRequest,
-                    "Bad Request",
+                    StatusCodes.Status409Conflict,
+                    "Conflict",
                     exception.Message)
             ),
 
