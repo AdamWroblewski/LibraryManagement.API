@@ -1,10 +1,9 @@
-﻿using System.Reflection;
-using FluentValidation;
+﻿using FluentValidation;
 using LibraryManagement.Application.Behaviors;
 using LibraryManagement.Application.Commands.Auth;
-using LibraryManagement.Application.MappingProfiles;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace LibraryManagement.Application
 {
@@ -14,7 +13,6 @@ namespace LibraryManagement.Application
         {
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddValidatorsFromAssemblyContaining<RegisterUserCommandValidator>();

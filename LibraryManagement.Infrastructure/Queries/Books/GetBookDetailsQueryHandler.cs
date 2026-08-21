@@ -27,6 +27,7 @@ namespace LibraryManagement.Infrastructure.Queries.Books
             var utcNow = _timeProvider.GetUtcNow().UtcDateTime;
 
             var book = await _context.Books
+                .AsNoTracking()
                 .Where(b => b.Id == request.Id)
                 .ProjectTo<BookDetailsDto>(
                     _mapper.ConfigurationProvider,
