@@ -1,8 +1,9 @@
-﻿using LibraryManagement.Domain.Entities;
+﻿using LibraryManagement.Application.CustomExceptions;
+using LibraryManagement.Domain.Entities;
 using LibraryManagement.Domain.Interfaces;
 using MediatR;
 
-namespace LibraryManagement.Application.Commands.BookReservations
+namespace LibraryManagement.Application.Commands.BookLoans
 {
     public class CreateBookLoanCommandHandler : IRequestHandler<CreateBookLoanCommand, int>
     {
@@ -22,7 +23,7 @@ namespace LibraryManagement.Application.Commands.BookReservations
                 .IsBookAvailableAsync(request.BookId, utcNow, cancellationToken);
 
             if (!isBookAvailable)
-                throw new InvalidOperationException("This book is not available now.");
+                throw new DuplicateResourceException($"Book is not available for loan right now.");
 
             var bookLoan = new BookLoan(request.BookId, request.UserId);
 

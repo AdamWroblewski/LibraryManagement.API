@@ -1,8 +1,7 @@
-using LibraryManagement.Application.Commands.BookReservations;
+using LibraryManagement.Application.Commands.BookLoans;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace LibraryManagement.API.Controllers
 {
@@ -26,8 +25,8 @@ namespace LibraryManagement.API.Controllers
                 UserId = UserId
             };
 
-            var loanId = await _mediator.Send(secureCommand, cancellationToken); 
-            
+            var loanId = await _mediator.Send(secureCommand, cancellationToken);
+
             // TODO: change to CreatedAtAction()
             return StatusCode(StatusCodes.Status201Created, new { id = loanId });
         }

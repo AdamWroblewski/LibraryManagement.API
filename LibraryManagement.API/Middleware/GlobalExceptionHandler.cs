@@ -33,6 +33,16 @@ public class GlobalExceptionHandler : IExceptionHandler
                     exception.Message)
             ),
 
+            UserRegistrationFailedException regEx => (
+                StatusCodes.Status400BadRequest,
+                CreateProblemDetails(httpContext, StatusCodes.Status400BadRequest, "Registration Failed", string.Join("; ", regEx.Errors))
+            ),
+
+            InvalidCredentialsException => (
+                StatusCodes.Status401Unauthorized,
+                CreateProblemDetails(httpContext, StatusCodes.Status401Unauthorized, "Authentication Failed", exception.Message)
+            ),
+
             EntityNotFoundException or KeyNotFoundException => (
                 StatusCodes.Status404NotFound,
                 CreateProblemDetails(

@@ -1,4 +1,5 @@
-﻿using LibraryManagement.Application.Interfaces;
+﻿using LibraryManagement.Application.CustomExceptions;
+using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Infrastructure.Data;
 using LibraryManagement.Infrastructure.Identity;
 using LibraryManagement.Infrastructure.Interfaces;
@@ -40,8 +41,8 @@ namespace LibraryManagement.Infrastructure.Services
 
             if (!result.Succeeded)
             {
-                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
-                throw new InvalidOperationException($"User creation failed: {errors}");
+                var errors = result.Errors.Select(x => x.Description);
+                throw new UserRegistrationFailedException(errors);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -62,13 +63,13 @@ namespace LibraryManagement.Infrastructure.Services
 
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
-                throw new InvalidOperationException("Invalid email or password.");
+                throw new InvalidCredentialsException();
 
             cancellationToken.ThrowIfCancellationRequested();
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
             if (!result.Succeeded)
-                throw new InvalidOperationException("Invalid email or password.");
+                throw new InvalidCredentialsException();
 
             cancellationToken.ThrowIfCancellationRequested();
             var token = await _tokenService.GenerateTokenAsync(user, cancellationToken);

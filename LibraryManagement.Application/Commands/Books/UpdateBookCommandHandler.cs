@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using LibraryManagement.Application.CustomExceptions;
 using LibraryManagement.Domain.Interfaces;
 using MediatR;
 
@@ -17,7 +17,7 @@ namespace LibraryManagement.Application.Commands.Books
         {
             var book = await _bookRepository.GetByIdAsync(request.Id, cancellationToken);
             if (book == null)
-                throw new KeyNotFoundException("Book not found.");
+                throw new EntityNotFoundException("Book not found.");
 
             book.UpdateDetails(request.Title, request.Author, request.ISBN, request.PublicationYear, request.Publisher);
             await _bookRepository.UpdateAsync(book, cancellationToken);
