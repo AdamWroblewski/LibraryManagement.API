@@ -82,7 +82,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         }
 
         httpContext.Response.StatusCode = statusCode;
-        await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+        await httpContext.Response.WriteAsJsonAsync(problemDetails, problemDetails.GetType(), cancellationToken);
 
         return true; // Mark as handled
     }

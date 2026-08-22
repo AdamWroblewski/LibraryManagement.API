@@ -51,7 +51,22 @@ namespace LibraryManagement.API.Controllers
                 UserId = UserId
             };
 
-            var result = await _mediator.Send(secureCommand, cancellationToken);
+            await _mediator.Send(secureCommand, cancellationToken);
+
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpDelete("{bookId:int}/reviews")]
+        public async Task<IActionResult> Delete(int bookId, DeleteBookReviewCommand command, CancellationToken cancellationToken)
+        {
+            var secureCommand = command with
+            {
+                BookId = bookId,
+                UserId = UserId
+            };
+
+            await _mediator.Send(secureCommand, cancellationToken);
 
             return NoContent();
         }

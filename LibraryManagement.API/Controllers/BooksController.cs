@@ -68,10 +68,7 @@ namespace LibraryManagement.API.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new DeleteBookByIdCommand(id), cancellationToken);
-
-            if (!result)
-                return NotFound();
+            await _mediator.Send(new DeleteBookCommand(id), cancellationToken);
 
             return NoContent();
         }

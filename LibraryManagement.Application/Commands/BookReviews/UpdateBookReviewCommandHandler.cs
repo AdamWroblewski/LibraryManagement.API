@@ -16,10 +16,9 @@ namespace LibraryManagement.Application.Commands.BookReviews
         public async Task<Unit> Handle(UpdateBookReviewCommand request, CancellationToken cancellationToken)
         {
             var review = await _bookReviewRepository.GetByBookIdAndUserId(request.BookId, request.UserId, cancellationToken);
+
             if (review == null) 
-            {
                 throw new EntityNotFoundException("Book review");
-            }
 
             review.UpdateDetails(request.Comment, request.Rate);
             await _bookReviewRepository.UpdateAsync(review, cancellationToken);

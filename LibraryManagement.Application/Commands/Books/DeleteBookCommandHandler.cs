@@ -1,30 +1,28 @@
-﻿using AutoMapper;
+﻿using LibraryManagement.Application.CustomExceptions;
 using LibraryManagement.Domain.Interfaces;
 using MediatR;
 
 namespace LibraryManagement.Application.Commands.Books
 {
-    public class DeleteBookByIdCommandHandler : IRequestHandler<DeleteBookByIdCommand, bool>
+    public class DeleteBookCommandHandler : IRequestHandler<DeleteBookCommand, Unit>
     {
         private readonly IBookRepository _bookRepository;
-        private readonly IMapper _mapper;
 
-        public DeleteBookByIdCommandHandler(IBookRepository bookRepository, IMapper mapper)
+        public DeleteBookCommandHandler(IBookRepository bookRepository)
         {
             _bookRepository = bookRepository;
-            _mapper = mapper;
         }
 
-        public async Task<bool> Handle(DeleteBookByIdCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DeleteBookCommand request, CancellationToken cancellationToken)
         {
             var book = await _bookRepository.GetByIdAsync(request.Id, cancellationToken);
 
             if (book is null)
-                return false;
+                throw new EntityNotFoundException("Book");
 
             await _bookRepository.DeleteAsync(book, cancellationToken);
 
-            return true;
+            return Unit.Value;
         }
     }
 }
