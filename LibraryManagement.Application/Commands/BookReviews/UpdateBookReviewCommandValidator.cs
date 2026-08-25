@@ -10,6 +10,10 @@ namespace LibraryManagement.Application.Commands.BookReviews
                 .GreaterThan(0)
                 .WithMessage("Book ID must be greater than 0.");
 
+            RuleFor(x => x.UserId)
+                .GreaterThan(0)
+                .WithMessage("User ID must be greater than 0.");
+
             RuleFor(x => x.Rate)
                 .InclusiveBetween(1, 5)
                 .WithMessage("Rating must be between 1 and 5.");
