@@ -17,13 +17,6 @@ namespace LibraryManagement.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("{bookId:int}/reviews/{reviewId:int}")]
-        public async Task<IActionResult> GetById()
-        {
-            return null;
-        }
-
-        [Authorize]
         [HttpPost("{bookId:int}/reviews")]
         public async Task<IActionResult> Create(int bookId, [FromBody] CreateBookReviewCommand command, CancellationToken cancellationToken)
         {
@@ -36,8 +29,9 @@ namespace LibraryManagement.API.Controllers
             var reviewId = await _mediator.Send(secureCommand, cancellationToken);
 
             return CreatedAtAction(
-                actionName: nameof(GetById),
-                routeValues: new { id = secureCommand.BookId, reviewId = reviewId },
+                actionName: nameof(BooksController.GetBookDetails),
+                controllerName: "Books",
+                routeValues: new { id = secureCommand.BookId },
                 value: new { id = reviewId });
         }
 

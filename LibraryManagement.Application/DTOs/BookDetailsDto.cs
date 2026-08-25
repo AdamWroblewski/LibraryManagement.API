@@ -1,4 +1,6 @@
-﻿namespace LibraryManagement.Application.DTOs
+﻿using LibraryManagement.Application.Models;
+
+namespace LibraryManagement.Application.DTOs
 {
     public class BookDetailsDto
     {
@@ -10,6 +12,6 @@
         public string Publisher { get; set; } = string.Empty;
         public bool IsAvailable { get; set; }
         public ICollection<BookLoanDto> CurrentUserLoans { get; set; } = new List<BookLoanDto>();
-        public ICollection<BookReviewDto> Reviews { get; set; } = new List<BookReviewDto>();
+        public PagedList<BookReviewDto> Reviews { get; set; } = default!;
     }
 }

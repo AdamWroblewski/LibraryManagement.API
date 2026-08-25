@@ -21,20 +21,25 @@ namespace LibraryManagement.API.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<PagedList<BookListDto>>> GetPagedBooks(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagedList<BookListDto>>> GetPagedBooks(CancellationToken cancellationToken,
+            int pageNumber = 1,
+            int pageSize = 25)
         {
             var query = new GetPagedBooksQuery(pageNumber, pageSize);
-            
+
             var books = await _mediator.Send(query, cancellationToken);
-            
+
             return Ok(books);
         }
 
         [Authorize]
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<BookDetailsDto>> GetBookDetails(int id, CancellationToken cancellationToken)
+        public async Task<ActionResult<BookDetailsDto>> GetBookDetails(int id,
+            CancellationToken cancellationToken,
+            int pageNumber = 1,
+            int pageSize = 25)
         {
-            var query = new GetBookDetailsQuery(id, UserId);
+            var query = new GetBookDetailsQuery(id, UserId, pageNumber, pageSize);
 
             var book = await _mediator.Send(query, cancellationToken);
 
@@ -43,16 +48,18 @@ namespace LibraryManagement.API.Controllers
 
         [Authorize(Roles = "Employee")]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateBookCommand command, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create([FromBody] CreateBookCommand command,
+            CancellationToken cancellationToken)
         {
             var bookId = await _mediator.Send(command, cancellationToken);
-            
+
             return CreatedAtAction(nameof(GetBookDetails), new { id = bookId }, new { id = bookId });
         }
 
         [Authorize(Roles = "Employee")]
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateBookCommand command, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateBookCommand command,
+            CancellationToken cancellationToken)
         {
             var secureCommand = command with
             {
@@ -60,13 +67,14 @@ namespace LibraryManagement.API.Controllers
             };
 
             await _mediator.Send(secureCommand, cancellationToken);
-            
+
             return NoContent();
         }
 
         [Authorize(Roles = "Employee")]
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete(int id,
+            CancellationToken cancellationToken)
         {
             await _mediator.Send(new DeleteBookCommand(id), cancellationToken);
 

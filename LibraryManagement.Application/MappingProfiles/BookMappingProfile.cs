@@ -8,7 +8,7 @@ namespace LibraryManagement.Application.MappingProfiles
     {
         public BookMappingProfile()
         {
-            int userId = 0; 
+            int userId = 0;
             DateTime utcNow = DateTime.MinValue;
 
             CreateMap<Book, BookDetailsDto>()
@@ -18,7 +18,8 @@ namespace LibraryManagement.Application.MappingProfiles
                         l.Status == LoanStatus.Overdue ||
                         (l.Status == LoanStatus.Reserved && l.ReservedAt.AddHours(BookLoan.HoldPolicyHours) > utcNow))))
                 .ForMember(dest => dest.CurrentUserLoans, opt => opt.MapFrom(src =>
-                    src.Loans.Where(l => l.UserId == userId)));
+                    src.Loans.Where(l => l.UserId == userId)))
+                .ForMember(dest => dest.Reviews, opt => opt.Ignore());
         }
     }
 }

@@ -4,6 +4,7 @@ using LibraryManagement.Application.CustomExceptions;
 using LibraryManagement.Application.DTOs;
 using LibraryManagement.Application.Queries.Books;
 using LibraryManagement.Infrastructure.Data;
+using LibraryManagement.Infrastructure.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,12 +32,18 @@ namespace LibraryManagement.Infrastructure.Queries.Books
                 .Where(b => b.Id == request.Id)
                 .ProjectTo<BookDetailsDto>(
                     _mapper.ConfigurationProvider,
-                    new { userId = request.UserId, utcNow }
+                    new { userId = request.UserId, utcNow, request.PageNumber, request.PageSize }
                 )
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (book == null)
                 throw new EntityNotFoundException("Book not found");
+
+            book.Reviews = await _context.BookReviews
+                .AsNoTracking()
+                .Where(r => r.BookId == request.Id)
+                .ProjectTo<BookReviewDto>(_mapper.ConfigurationProvider)
+                .ToPagedListAsync(request.PageNumber, request.PageSize, cancellationToken);
 
             return book;
         }
