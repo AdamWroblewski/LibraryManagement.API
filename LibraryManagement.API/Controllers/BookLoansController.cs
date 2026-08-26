@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagement.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/book-loans")]
     [ApiController]
     public class BookLoansController : BaseApiController
     {

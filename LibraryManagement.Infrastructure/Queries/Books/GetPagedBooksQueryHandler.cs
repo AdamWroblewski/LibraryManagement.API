@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.Infrastructure.Queries.Books
 {
-    public class GetPagedBooksQueryHandler : IRequestHandler<GetPagedBooksQuery, PagedList<BookListDto>>
+    public class GetPagedBooksQueryHandler : IRequestHandler<GetPagedBooksQuery, PagedList<BookDto>>
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -22,12 +22,12 @@ namespace LibraryManagement.Infrastructure.Queries.Books
 
         }
 
-        public async Task<PagedList<BookListDto>> Handle(GetPagedBooksQuery request, CancellationToken cancellationToken)
+        public async Task<PagedList<BookDto>> Handle(GetPagedBooksQuery request, CancellationToken cancellationToken)
         {
             return await _context.Books
                 .AsNoTracking()
                 .OrderBy(x => x.Title)
-                .ProjectTo<BookListDto>(_mapper.ConfigurationProvider)
+                .ProjectTo<BookDto>(_mapper.ConfigurationProvider)
                 .ToPagedListAsync(request.PageNumber, request.PageSize, cancellationToken);
         }
     }

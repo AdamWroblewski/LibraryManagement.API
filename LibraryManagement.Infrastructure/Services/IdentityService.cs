@@ -76,5 +76,22 @@ namespace LibraryManagement.Infrastructure.Services
 
             return token;
         }
+
+        public async Task ChangePasswordAsync(int userId, 
+            string currentPassword, 
+            string newPassword, 
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                throw new EntityNotFoundException("User");
+
+            var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+
+            if (!result.Succeeded)
+                throw new InvalidCredentialsException();
+        }
     }
 }

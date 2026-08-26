@@ -11,5 +11,10 @@
         Task<string> LoginAsync(string email,
             string password,
             CancellationToken cancellationToken = default);
+
+        Task ChangePasswordAsync(int userId, 
+            string currentPassword, 
+            string newPassword, 
+            CancellationToken cancellationToken = default);
     }
 }

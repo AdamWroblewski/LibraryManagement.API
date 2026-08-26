@@ -20,6 +20,8 @@ namespace LibraryManagement.Application.MappingProfiles
                 .ForMember(dest => dest.CurrentUserLoans, opt => opt.MapFrom(src =>
                     src.Loans.Where(l => l.UserId == userId)))
                 .ForMember(dest => dest.Reviews, opt => opt.Ignore());
+
+            CreateMap<Book, BookDto>();
         }
     }
 }

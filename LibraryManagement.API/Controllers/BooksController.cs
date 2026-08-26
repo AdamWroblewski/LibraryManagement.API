@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagement.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/books")]
     [ApiController]
     public class BooksController : BaseApiController
     {
@@ -21,7 +21,7 @@ namespace LibraryManagement.API.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<PagedList<BookListDto>>> GetPagedBooks(CancellationToken cancellationToken,
+        public async Task<ActionResult<PagedList<BookDto>>> GetPagedBooks(CancellationToken cancellationToken,
             int pageNumber = 1,
             int pageSize = 25)
         {

@@ -1,12 +1,13 @@
 ﻿using LibraryManagement.Application.Commands.Auth;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagement.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseApiController
     {
         private readonly IMediator _mediator;
 
@@ -30,6 +31,17 @@ namespace LibraryManagement.API.Controllers
             string token = await _mediator.Send(command, cancellationToken);
 
             return Ok(new { token });
+        }
+
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command, CancellationToken cancellationToken)
+        {
+            var secureCommand = command with { UserId = UserId };
+
+            await _mediator.Send(secureCommand, cancellationToken);
+
+            return NoContent();
         }
     }
 }

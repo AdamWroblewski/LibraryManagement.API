@@ -5,6 +5,6 @@ namespace LibraryManagement.Application.Interfaces.QueryServices
 {
     public interface IBookQueryService
     {
-        Task<PagedList<BookListDto>> GetPagedBooksAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
+        Task<PagedList<BookDto>> GetPagedBooksAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
     }
 }
