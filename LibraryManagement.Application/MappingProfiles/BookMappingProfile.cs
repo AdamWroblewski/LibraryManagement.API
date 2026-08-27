@@ -16,7 +16,7 @@ namespace LibraryManagement.Application.MappingProfiles
                     !src.Loans.Any(l =>
                         l.Status == LoanStatus.Active ||
                         l.Status == LoanStatus.Overdue ||
-                        (l.Status == LoanStatus.Reserved && l.ReservedAt.AddHours(BookLoan.HoldPolicyHours) > utcNow))))
+                        (l.Status == LoanStatus.Reserved && l.ReservedAt.AddHours(BookLoan.ReservationHoldPolicyHours) > utcNow))))
                 .ForMember(dest => dest.CurrentUserLoans, opt => opt.MapFrom(src =>
                     src.Loans.Where(l => l.UserId == userId)))
                 .ForMember(dest => dest.Reviews, opt => opt.Ignore());

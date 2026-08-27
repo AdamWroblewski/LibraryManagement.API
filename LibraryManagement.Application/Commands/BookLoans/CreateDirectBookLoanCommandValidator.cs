@@ -2,9 +2,9 @@
 
 namespace LibraryManagement.Application.Commands.BookLoans
 {
-    public class CreateBookLoanCommandHandlerValidator : AbstractValidator<CreateBookLoanCommand>
+    public class CreateDirectBookLoanCommandValidator : AbstractValidator<CreateDirectBookLoanCommand>
     {
-        public CreateBookLoanCommandHandlerValidator()
+        public CreateDirectBookLoanCommandValidator()
         {
             RuleFor(x => x.UserId)
                 .GreaterThan(0)

@@ -1,4 +1,6 @@
-﻿namespace LibraryManagement.Domain.Entities
+﻿using LibraryManagement.Domain.CustomExceptions;
+
+namespace LibraryManagement.Domain.Entities
 {
     public class BookLoan
     {
@@ -13,10 +15,11 @@
         public DateTime? DueAt { get; private set; }
         public DateTime? ReturnedAt { get; private set; }
         public DateTime? ExpiredAt { get; private set; }
-        public DateTime HoldExpiresAt => ReservedAt.AddHours(HoldPolicyHours);
+        public DateTime HoldExpiresAt => ReservedAt.AddHours(ReservationHoldPolicyHours);
 
 
-        public const double HoldPolicyHours = 72;
+        public const int ReservationHoldPolicyHours = 72;
+        public const int CheckoutPolicyDays = 28;
 
         public BookLoan(int bookId, int userId)
         {
@@ -26,24 +29,47 @@
             ReservedAt = DateTime.UtcNow;
         }
 
-        public BookLoan(int bookId, int userId, LoanStatus status)
+        public static BookLoan CreateDirectLoan(int bookId, int userId)
         {
-            BookId = bookId;
-            UserId = userId;
-            Status = status;
-            ReservedAt = DateTime.UtcNow;
-            CheckedOutAt = status == LoanStatus.Active ? DateTime.UtcNow : null;
+            var loan = new BookLoan(bookId, userId)
+            {
+                Status = LoanStatus.Active,
+                CheckedOutAt = DateTime.UtcNow,
+                DueAt = DateTime.UtcNow.AddDays(CheckoutPolicyDays)
+            };
+
+            return loan;
         }
 
         public void MarkAsExpired()
         {
             if (Status != LoanStatus.Reserved)
-            {
-                throw new InvalidOperationException($"Cannot expire a loan with status '{Status}'. Only 'Reserved' loans can be expired.");
-            }
+                throw new InvalidLoanStatusTransitionException(
+                    $"Cannot expire a loan with status '{Status}'. Only 'Reserved' loans can be expired.");
 
             Status = LoanStatus.Expired;
             ExpiredAt = DateTime.UtcNow;
+        }
+
+        public void MarkAsReturned()
+        {
+            if (Status != LoanStatus.Active && Status != LoanStatus.Overdue)
+                throw new InvalidLoanStatusTransitionException(
+                    $"Cannot return loan. Only 'Active' or 'Overdue' can be returned.");
+
+            Status = LoanStatus.Returned;
+            ReturnedAt = DateTime.UtcNow;
+        }
+
+        public void Checkout()
+        {
+            if (Status != LoanStatus.Reserved)
+                throw new InvalidLoanStatusTransitionException(
+                    $"Cannot check out a loan with status '{Status}'. Only 'Reserved' loans can be checked out.");
+
+            Status = LoanStatus.Active;
+            CheckedOutAt = DateTime.UtcNow;
+            DueAt = DateTime.UtcNow.AddDays(CheckoutPolicyDays);
         }
     }
 }

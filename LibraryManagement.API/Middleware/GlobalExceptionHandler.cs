@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LibraryManagement.Application.CustomExceptions;
+using LibraryManagement.Domain.CustomExceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,6 +59,15 @@ public class GlobalExceptionHandler : IExceptionHandler
                     httpContext,
                     StatusCodes.Status409Conflict,
                     "Conflict",
+                    exception.Message)
+            ),
+
+            InvalidLoanStatusTransitionException => (
+                StatusCodes.Status409Conflict,
+                CreateProblemDetails(
+                    httpContext,
+                    StatusCodes.Status409Conflict,
+                    "Invalid Status Transition",
                     exception.Message)
             ),
 

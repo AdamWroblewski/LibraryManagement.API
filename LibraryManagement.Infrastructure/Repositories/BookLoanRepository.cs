@@ -20,7 +20,7 @@ namespace LibraryManagement.Infrastructure.Repositories
                 .AnyAsync(l => l.BookId == bookId && (
                     l.Status == LoanStatus.Active ||
                     l.Status == LoanStatus.Overdue ||
-                    (l.Status == LoanStatus.Reserved && l.ReservedAt.AddHours(BookLoan.HoldPolicyHours) > utcNow)
+                    (l.Status == LoanStatus.Reserved && l.ReservedAt.AddHours(BookLoan.ReservationHoldPolicyHours) > utcNow)
                 ), cancellationToken);
         }
     }

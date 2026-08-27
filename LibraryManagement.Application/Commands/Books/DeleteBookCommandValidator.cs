@@ -2,9 +2,9 @@
 
 namespace LibraryManagement.Application.Commands.Books
 {
-    public class DeleteBookCommandHandlerValidator : AbstractValidator<DeleteBookCommand>
+    public class DeleteBookCommandValidator : AbstractValidator<DeleteBookCommand>
     {
-        public DeleteBookCommandHandlerValidator()
+        public DeleteBookCommandValidator()
         {
             RuleFor(x => x.Id)
                     .NotEmpty()

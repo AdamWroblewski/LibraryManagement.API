@@ -43,8 +43,33 @@ namespace LibraryManagement.API.Controllers
 
             var loanId = await _mediator.Send(secureCommand, cancellationToken);
 
-            // TODO: change to CreatedAtAction()
             return StatusCode(StatusCodes.Status201Created, new { id = loanId });
+        }
+
+        [Authorize(Roles = "Employee")]
+        [HttpPost("{id:int}/checkout")]
+        public async Task<IActionResult> Checkout(int id, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new CheckoutBookLoanCommand(id), cancellationToken);
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Employee")]
+        [HttpPost("direct")]
+        public async Task<IActionResult> CreateDirectLoan([FromBody] CreateDirectBookLoanCommand command, CancellationToken cancellationToken)
+        {
+            var loanId = await _mediator.Send(command);
+
+            return StatusCode(StatusCodes.Status201Created, new { id = loanId });
+        }
+
+        [Authorize(Roles = "Employee")]
+        [HttpPost("{id:int}/return")]
+        public async Task<IActionResult> Return(int id, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new ReturnBookLoanCommand(id));
+
+            return NoContent();
         }
     }
 }

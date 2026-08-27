@@ -15,11 +15,11 @@ namespace LibraryManagement.Application.MappingProfiles
 
             CreateMap<BookLoan, BookLoanDto>()
                 .ForMember(dest => dest.ReservationExpiresAt, opt => opt.MapFrom(src =>
-                    src.ReservedAt.AddHours(BookLoan.HoldPolicyHours)))
+                    src.ReservedAt.AddHours(BookLoan.ReservationHoldPolicyHours)))
                 .ForMember(dest => dest.IsReservationExpired, opt => opt.MapFrom(src =>
                     src.Status == LoanStatus.Expired ||
                     src.Status == LoanStatus.Cancelled ||
-                    (src.Status == LoanStatus.Reserved && src.ReservedAt.AddHours(BookLoan.HoldPolicyHours) <= utcNow)));
+                    (src.Status == LoanStatus.Reserved && src.ReservedAt.AddHours(BookLoan.ReservationHoldPolicyHours) <= utcNow)));
         }
     }
 }

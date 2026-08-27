@@ -59,7 +59,7 @@ namespace LibraryManagement.Infrastructure.BackgroundServices
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
             var utcNow = _timeProvider.GetUtcNow().UtcDateTime;
-            var expirationThreshold = utcNow.AddHours(-BookLoan.HoldPolicyHours);
+            var expirationThreshold = utcNow.AddHours(-BookLoan.ReservationHoldPolicyHours);
 
             var expiredLoans = await context.BookLoans
                 .Where(l => l.Status == LoanStatus.Reserved && l.ReservedAt <= expirationThreshold)
