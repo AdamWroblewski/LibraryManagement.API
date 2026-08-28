@@ -34,7 +34,7 @@ namespace LibraryManagement.API.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult> CreateBookLoan([FromBody] CreateBookLoanCommand command, CancellationToken cancellationToken)
+        public async Task<ActionResult> CreateLoan([FromBody] CreateBookLoanCommand command, CancellationToken cancellationToken)
         {
             var secureCommand = command with
             {
@@ -58,7 +58,7 @@ namespace LibraryManagement.API.Controllers
         [HttpPost("direct")]
         public async Task<IActionResult> CreateDirectLoan([FromBody] CreateDirectBookLoanCommand command, CancellationToken cancellationToken)
         {
-            var loanId = await _mediator.Send(command);
+            var loanId = await _mediator.Send(command, cancellationToken);
 
             return StatusCode(StatusCodes.Status201Created, new { id = loanId });
         }
@@ -67,7 +67,16 @@ namespace LibraryManagement.API.Controllers
         [HttpPost("{id:int}/return")]
         public async Task<IActionResult> Return(int id, CancellationToken cancellationToken)
         {
-            await _mediator.Send(new ReturnBookLoanCommand(id));
+            await _mediator.Send(new ReturnBookLoanCommand(id), cancellationToken);
+
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpPost("{id:int}/cancel")]
+        public async Task<IActionResult> CancelReservation(int id, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new CancelBookReservationCommand(id, UserId), cancellationToken);
 
             return NoContent();
         }

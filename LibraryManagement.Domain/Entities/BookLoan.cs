@@ -15,6 +15,7 @@ namespace LibraryManagement.Domain.Entities
         public DateTime? DueAt { get; private set; }
         public DateTime? ReturnedAt { get; private set; }
         public DateTime? ExpiredAt { get; private set; }
+        public DateTime? CancelledAt { get; private set; }
         public DateTime HoldExpiresAt => ReservedAt.AddHours(ReservationHoldPolicyHours);
 
 
@@ -59,6 +60,16 @@ namespace LibraryManagement.Domain.Entities
 
             Status = LoanStatus.Returned;
             ReturnedAt = DateTime.UtcNow;
+        }
+
+        public void CancelReservation()
+        {
+            if (Status != LoanStatus.Reserved)
+                throw new InvalidLoanStatusTransitionException(
+                    $"Cannot cancel loan. Only 'Reserved' can be cancelled.");
+
+            Status = LoanStatus.Cancelled;
+            CancelledAt = DateTime.UtcNow;
         }
 
         public void Checkout()

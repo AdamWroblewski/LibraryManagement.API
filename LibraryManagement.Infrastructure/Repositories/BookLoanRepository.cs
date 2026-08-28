@@ -23,5 +23,10 @@ namespace LibraryManagement.Infrastructure.Repositories
                     (l.Status == LoanStatus.Reserved && l.ReservedAt.AddHours(BookLoan.ReservationHoldPolicyHours) > utcNow)
                 ), cancellationToken);
         }
+
+        public async Task<BookLoan?> GetByIdAndUserId(int id, int userId, CancellationToken cancellationToken = default)
+        {
+            return await _context.BookLoans.SingleOrDefaultAsync(l => l.Id == id && l.UserId == userId, cancellationToken);
+        }
     }
 }
