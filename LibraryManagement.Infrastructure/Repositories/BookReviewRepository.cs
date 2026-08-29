@@ -15,6 +15,7 @@ namespace LibraryManagement.Infrastructure.Repositories
         {
             return await _context.BookReviews.AnyAsync(b => b.BookId == bookId && b.UserId == userId, cancellationToken);
         }
+
         public async Task<BookReview?> GetByBookIdAndUserId(int bookId, int userId, CancellationToken cancellationToken = default)
         {
             return await _context.BookReviews.SingleOrDefaultAsync(b => b.BookId == bookId && b.UserId == userId, cancellationToken);

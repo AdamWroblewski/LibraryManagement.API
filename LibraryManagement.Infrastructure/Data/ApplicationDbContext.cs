@@ -28,12 +28,18 @@ namespace LibraryManagement.Infrastructure.Data
                 entity.Property(b => b.Publisher).HasMaxLength(100);
             });
 
-            modelBuilder.Entity<BookLoan>(builder =>
+            modelBuilder.Entity<BookLoan>(entity =>
             {
-                builder.HasOne<ApplicationUser>()
+                entity.HasOne<ApplicationUser>()
                        .WithMany(u => u.BookLoans)
                        .HasForeignKey(bl => bl.UserId)
                        .OnDelete(DeleteBehavior.Restrict);
+
+                // One blocking loan per book at a time
+                entity.HasIndex(l => l.BookId)
+                       .IsUnique()
+                       .HasFilter($"[Status] IN ({(int)LoanStatus.Reserved}, {(int)LoanStatus.Active}, {(int)LoanStatus.Overdue})")
+                       .HasDatabaseName("IX_BookLoans_BookId_Active");
             });
 
             modelBuilder.Entity<BookReview>(entity =>
@@ -42,6 +48,10 @@ namespace LibraryManagement.Infrastructure.Data
                        .WithMany()
                        .HasForeignKey(br => br.UserId)
                        .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(br => new { br.BookId, br.UserId })
+                      .IsUnique()
+                      .HasDatabaseName("IX_BookReviews_BookId_UserId");
             });
         }
     }

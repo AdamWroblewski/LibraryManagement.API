@@ -1,5 +1,7 @@
-﻿using LibraryManagement.Domain.Interfaces;
+﻿using LibraryManagement.Application.CustomExceptions;
+using LibraryManagement.Domain.Interfaces;
 using LibraryManagement.Infrastructure.Data;
+using LibraryManagement.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.Infrastructure.Repositories
@@ -25,8 +27,15 @@ namespace LibraryManagement.Infrastructure.Repositories
 
         public virtual async Task AddAsync(T entity, CancellationToken cancellationToken = default)
         {
-            await _context.Set<T>().AddAsync(entity, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            try
+            {
+                await _context.Set<T>().AddAsync(entity, cancellationToken);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException ex) when (ex.IsUniqueConstraintViolation())
+            {
+                throw new DuplicateResourceException(GetDuplicateErrorMessage());
+            }
         }
 
         public virtual async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
@@ -40,5 +49,7 @@ namespace LibraryManagement.Infrastructure.Repositories
             _context.Set<T>().Remove(entity);
             await _context.SaveChangesAsync(cancellationToken);
         }
+
+        protected virtual string GetDuplicateErrorMessage() => $"A duplicate {typeof(T).Name} already exists.";
     }
 }
