@@ -44,6 +44,15 @@ public class GlobalExceptionHandler : IExceptionHandler
                 CreateProblemDetails(httpContext, StatusCodes.Status401Unauthorized, "Authentication Failed", exception.Message)
             ),
 
+            AccountLockedOutException => (
+                StatusCodes.Status423Locked,
+                CreateProblemDetails(
+                    httpContext,
+                    StatusCodes.Status423Locked,
+                    "Account locked",
+                    exception.Message)
+            ),
+
             EntityNotFoundException or KeyNotFoundException => (
                 StatusCodes.Status404NotFound,
                 CreateProblemDetails(

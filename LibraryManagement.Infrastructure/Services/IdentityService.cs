@@ -67,7 +67,11 @@ namespace LibraryManagement.Infrastructure.Services
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, password, true);
+
+            if (result.IsLockedOut)
+                throw new AccountLockedOutException();
+
             if (!result.Succeeded)
                 throw new InvalidCredentialsException();
 
