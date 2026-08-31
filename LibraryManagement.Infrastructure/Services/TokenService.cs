@@ -40,12 +40,13 @@ namespace LibraryManagement.Infrastructure.Services
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expiryHours = _configuration.GetValue<int>("Jwt:ExpiryHours");
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(20000),
+                expires: DateTime.UtcNow.AddHours(expiryHours),
                 signingCredentials: creds
             );
 
