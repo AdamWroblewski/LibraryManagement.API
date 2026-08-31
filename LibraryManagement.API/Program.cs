@@ -34,17 +34,19 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
         policy =>
-    {
-        policy.WithOrigins(
-                  "http://localhost:4200"
-              )
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
+        {
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
 });
 // Add services to the container
 builder.Services.AddControllers();
@@ -87,14 +89,19 @@ app.UseExceptionHandler();
 
 app.UseCors("AllowSpecificOrigins");
 
-if (app.Environment.IsDevelopment())
+var enableSwagger = app.Configuration.GetValue<bool>("EnableSwagger") || app.Environment.IsDevelopment();
+
+if (enableSwagger)
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
         options.EnablePersistAuthorization();
     });
+}
 
+if (app.Environment.IsDevelopment())
+{
     app.ApplyMigrations<ApplicationDbContext>();
     await SeedDataAsync(app);
 }
