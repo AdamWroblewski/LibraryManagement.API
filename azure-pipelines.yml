@@ -15,7 +15,6 @@ steps:
   inputs:
     packageType: 'sdk'
     version: '8.x'
-    installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'Build project'
@@ -40,7 +39,7 @@ steps:
 
 - script: |
     dotnet tool install --global dotnet-ef
-    echo "##vso[task.prependpath]$(USERPROFILE)\.dotnet\tools"
+    echo ##vso[task.prependpath]%USERPROFILE%\.dotnet\tools
   displayName: 'Install dotnet-ef tool'
 
 - script: dotnet ef database update --project LibraryManagement.Infrastructure/LibraryManagement.Infrastructure.csproj --configuration $(buildConfiguration) --connection "$(SqlConnectionString)"
@@ -56,7 +55,7 @@ steps:
     appName: 'LibraryManagementApi'
     package: '$(Build.ArtifactStagingDirectory)/LibraryManagementApi.zip'
 
-- script: dotnet run --project LibraryManagement.API/LibraryManagement.API.csproj seeddata
+- script: dotnet run --project LibraryManagement.API/LibraryManagement.API.csproj -c $(buildConfiguration) -- seeddata
   displayName: 'Seed database data'
   env:
     ConnectionStrings__DefaultConnection: "$(SqlConnectionString)"
