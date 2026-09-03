@@ -4,6 +4,7 @@ using LibraryManagement.Infrastructure.Data;
 using LibraryManagement.Infrastructure.Identity;
 using LibraryManagement.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.Infrastructure.Services
 {
@@ -25,34 +26,66 @@ namespace LibraryManagement.Infrastructure.Services
             _context = context;
         }
 
-        public async Task<int> RegisterUserAsync(string email,
+        public async Task<int> RegisterUserAsync(
+            string email,
             string password,
             string firstName,
             string lastName,
             CancellationToken cancellationToken = default)
         {
+            return await CreateUserWithRoleAsync(email, password, firstName, lastName, "User", cancellationToken);
+        }
+
+        public async Task<int> CreateEmployeeAsync(
+            string email,
+            string password,
+            string firstName,
+            string lastName,
+            CancellationToken cancellationToken = default)
+        {
+            return await CreateUserWithRoleAsync(email, password, firstName, lastName, "Employee", cancellationToken);
+        }
+
+        private async Task<int> CreateUserWithRoleAsync(string email,
+            string password,
+            string firstName,
+            string lastName,
+            string roleName,
+            CancellationToken cancellationToken = default)
+        {
             cancellationToken.ThrowIfCancellationRequested();
 
-            // Begin an explicit database transaction
-            await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
-            var user = new ApplicationUser { UserName = email, Email = email, FirstName = firstName, LastName = lastName };
-            var result = await _userManager.CreateAsync(user, password);
+            var strategy = _context.Database.CreateExecutionStrategy();
 
-            if (!result.Succeeded)
+            return await strategy.ExecuteAsync(async () =>
             {
-                var errors = result.Errors.Select(x => x.Description);
-                throw new UserRegistrationFailedException(errors);
-            }
+                await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
-            cancellationToken.ThrowIfCancellationRequested();
+                var user = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email,
+                    FirstName = firstName,
+                    LastName = lastName
+                };
 
-            await _userManager.AddToRoleAsync(user, "User");
+                var result = await _userManager.CreateAsync(user, password);
 
-            // Commit transaction
-            await transaction.CommitAsync(cancellationToken);
+                if (!result.Succeeded)
+                {
+                    var errors = result.Errors.Select(x => x.Description);
+                    throw new UserRegistrationFailedException(errors);
+                }
 
-            return user.Id;
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await _userManager.AddToRoleAsync(user, roleName);
+
+                await transaction.CommitAsync(cancellationToken);
+
+                return user.Id;
+            });
         }
 
         public async Task<string> LoginAsync(string email,
@@ -81,9 +114,9 @@ namespace LibraryManagement.Infrastructure.Services
             return token;
         }
 
-        public async Task ChangePasswordAsync(int userId, 
-            string currentPassword, 
-            string newPassword, 
+        public async Task ChangePasswordAsync(int userId,
+            string currentPassword,
+            string newPassword,
             CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();

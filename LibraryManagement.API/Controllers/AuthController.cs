@@ -21,8 +21,16 @@ namespace LibraryManagement.API.Controllers
         {
             var newUserId = await _mediator.Send(command, cancellationToken);
 
-            //TODO: change to CreatedAtAction
             return Created($"/api/users/{newUserId}", new { id = newUserId });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("create-employee")]
+        public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeCommand command, CancellationToken cancellationToken)
+        {
+            var newEmployeeId = await _mediator.Send(command, cancellationToken);
+
+            return Created($"/api/users/{newEmployeeId}", new { id = newEmployeeId });
         }
 
         [HttpPost("login")]

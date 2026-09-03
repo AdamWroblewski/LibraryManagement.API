@@ -94,8 +94,9 @@ app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "Library Management API v1");
-    options.RoutePrefix = string.Empty;
+    options.RoutePrefix = "swagger";
 });
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
 
 if (app.Environment.IsDevelopment())
@@ -113,7 +114,6 @@ if (args.Length == 1 && args[0].ToLower() == "seeddata")
 }
 
 app.UseHttpsRedirection();
-app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -133,8 +133,8 @@ async Task SeedDataAsync(IHost app)
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
 
             await SeedData.SeedRoles(roleManager);
-            await SeedData.SeedAdmin(userManager, roleManager);
-            SeedData.SeedBooks(context);
+            await SeedData.SeedUsers(userManager, roleManager);
+            SeedData.SeedBooksAndRelatedData(context, userManager);
         }
         catch (Exception ex)
         {

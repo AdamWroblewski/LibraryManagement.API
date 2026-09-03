@@ -97,6 +97,15 @@ namespace LibraryManagement.Infrastructure
                 };
             });
 
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequiredLength = 8;
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+            });
+
             services.AddAuthorization();
 
             return services;

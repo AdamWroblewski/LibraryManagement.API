@@ -2,9 +2,9 @@
 
 namespace LibraryManagement.Application.Commands.Auth
 {
-    public class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
+    public class CreateEmployeeCommandValidator : AbstractValidator<CreateEmployeeCommand>
     {
-        public RegisterUserCommandValidator()
+        public CreateEmployeeCommandValidator()
         {
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email is required.")
@@ -14,11 +14,11 @@ namespace LibraryManagement.Application.Commands.Auth
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Password is required.")
                 .MinimumLength(6).WithMessage("Password must be at least 6 characters long.")
+                .MaximumLength(128).WithMessage("Password cannot exceed 128 characters.")
                 .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
                 .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
                 .Matches("[0-9]").WithMessage("Password must contain at least one number.")
-                .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.")
-                .MaximumLength(128).WithMessage("Password cannot exceed 128 characters.");
+                .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
 
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("First name is required.")
