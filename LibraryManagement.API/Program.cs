@@ -89,16 +89,12 @@ app.UseExceptionHandler();
 
 app.UseCors("AllowSpecificOrigins");
 
-var enableSwagger = app.Configuration.GetValue<bool>("EnableSwagger") || app.Environment.IsDevelopment();
-
-if (enableSwagger)
+// For now allow swagger at production
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.EnablePersistAuthorization();
-    });
-}
+    options.EnablePersistAuthorization();
+});
 
 if (app.Environment.IsDevelopment())
 {
