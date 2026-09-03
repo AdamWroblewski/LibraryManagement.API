@@ -96,6 +96,8 @@ app.UseSwaggerUI(options =>
     options.EnablePersistAuthorization();
 });
 
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
 if (app.Environment.IsDevelopment())
 {
     app.ApplyMigrations<ApplicationDbContext>();
