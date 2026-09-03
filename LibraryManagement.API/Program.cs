@@ -93,10 +93,10 @@ app.UseCors("AllowSpecificOrigins");
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
-    options.EnablePersistAuthorization();
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Library Management API v1");
+    options.RoutePrefix = string.Empty;
 });
 
-app.MapGet("/", () => Results.Redirect("/swagger"));
 
 if (app.Environment.IsDevelopment())
 {
@@ -113,6 +113,7 @@ if (args.Length == 1 && args[0].ToLower() == "seeddata")
 }
 
 app.UseHttpsRedirection();
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.UseAuthentication();
 app.UseAuthorization();
